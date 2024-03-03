@@ -16,8 +16,7 @@ function [signal_PRPC, t] = generator_PRPC(fs, subN, N)
     t = (0:1/fs:N*subN/fs).';
     signal_PRPC = zeros(size(t));
     for i_N = 0:N-1
-        phi = 
+        phi = rand*2*pi;
         signal_PRPC(i_N*subN+1:i_N*subN+subN) = exp(1j*phi);
     end
-
 end

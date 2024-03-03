@@ -23,7 +23,6 @@ function [signal_MPSK, t] = generator_PSK(varargin)
     addOptional(in_par, 'Rb', 0);
     addOptional(in_par, 'phase_seq', 0);
     addOptional(in_par, 'M', 0);
-    addOptional(in_par, 'Rb', 0); % the rate of phase code transmission
     addParameter(in_par, 'noiseF', 0);
     addParameter(in_par, 'SNR', 0);
     parse(in_par,varargin{:});
