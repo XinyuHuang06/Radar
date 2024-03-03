@@ -2,7 +2,7 @@
 %% 信号生成类函数测试--signal_generator
 
 % gnerator_LFM--LFM信号
-T = 10.24*1e-6; %
+T = 5.12*1e-6; %
 B = 40*1e6; % 40 MHz
 fs = 100*1e6; % 100 MHz
 fc = 10*1e6; % 10MHz
@@ -20,12 +20,18 @@ code_seq = round(rand(1,64));
 
 %% 信号评估类函数测试--signal_evaluate
 
+% Evaluate_eps.m--测试信号Epilison值
+seq_SNR = 0:5:50;
+Evaluate_eps(signal_LFM,128,seq_SNR, 1000);
+
 % sidelobe--信号旁瓣、PSL、ISL、主瓣宽度(3dB)分析
 
 % AF_Analysis--模糊函数分析
 
 % CS_Analysis--二阶循环谱分析
-
+% Analysis_CS_FAM(fs,signal_LFM,256);
+% [signal_PRPC, t] = generator_PRPC(fs, 1, 512);
+% Analysis_CS_FAM(fs,signal_PRPC,256);
 % CWD分析
 
 % FS_Analysis--频谱分析

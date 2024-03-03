@@ -13,7 +13,7 @@
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
 function [signal_PRPC, t] = generator_PRPC(fs, subN, N)
-    t = (0:1/fs:N*subN/fs).';
+    t = (0:1/fs:(N*subN-1)/fs).';
     signal_PRPC = zeros(size(t));
     for i_N = 0:N-1
         phi = rand*2*pi;
