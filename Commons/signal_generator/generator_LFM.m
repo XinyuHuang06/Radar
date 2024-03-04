@@ -59,12 +59,6 @@ function [signal_LFM, t] = generator_LFM(varargin)
             signal_LFM_1(1+(i_np-1)*N_inter:N+(i_np-1)*N_inter) = signal_LFM;
         end
         signal_LFM = signal_LFM_1;
-%         signal_LFM_1(1:N) = signal_LFM;
-%         if num_pulse~=-1
-%             signal_LFM = repmat(signal_LFM_1, num_pulse, 1);
-%         else
-%             signal_LFM = signal_LFM_1;
-%         end
     end
     if noiseF
         signal_LFM = awgn(signal_LFM, SNR,'measured');

@@ -33,16 +33,18 @@ function [signal_OFDM, t] = generator_OFDM(varargin)
     m_type = in_par.Results.m_type;
     code = in_par.Results.code;
 
-    Num = T1*fs;
-    t = (0:1/fs:(N*Num-1)/fs).';
-    signal_OFDM = zeros(size(t));
+    Num = T1*fs; % 每个符号采样点数
+    t = (0:1/fs:(N*Num-1)/fs).'; % 时间坐标序列
+    signal_OFDM = zeros(size(t)); % 信号序列
     inter_f = 1/T1;
     switch m_type
         case 'BPSK'
-            if code == -1
-                code = exp(1j*(randi([0,1], M, N)/pi));
+            if code == -1 % 若无数据传入，随机生成调制序列
+                code = randi([0,1], M, N);
+                code(code==0) = -1;
             end
-            chouqu = zeros(M,N);
+
+            chouqu = zeros(M,N); % 随机抽取部分子载波归零，用于约束峰均比
             for iter_N = 0:N-1
                 index = randperm(M,M/4);
                 chouqu(index,iter_N+1) = 1;
@@ -82,6 +84,8 @@ function [signal_OFDM, t] = generator_OFDM(varargin)
                 end
                 signal_OFDM(iter_N*Num+1:iter_N*Num+Num) = sum(sub_carrier,2);
             end
+        case 'RM'
+
     end
     signal_OFDM = signal_OFDM/max(abs(signal_OFDM));
 end
