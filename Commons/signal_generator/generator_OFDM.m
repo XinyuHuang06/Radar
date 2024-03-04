@@ -84,8 +84,16 @@ function [signal_OFDM, t] = generator_OFDM(varargin)
                 end
                 signal_OFDM(iter_N*Num+1:iter_N*Num+Num) = sum(sub_carrier,2);
             end
-        case 'RM'
-
+        case 'RM' % Random modulated 
+        case 'None' % 不进行任何调制
+            for iter_N = 0:N-1
+                sub_carrier = zeros(Num,M);
+                for iter_M = 0:M-1
+                    sub_carrier(:,iter_M+1) = exp(1j*2*pi*(iter_M*inter_f)*t(iter_N*Num+1:iter_N*Num+Num));
+                end
+                signal_OFDM(iter_N*Num+1:iter_N*Num+Num) = sum(sub_carrier,2);
+            end
+            signal_OFDM = signal_OFDM.*exp(1j*2*pi*fc_1*t);            
     end
     signal_OFDM = signal_OFDM/max(abs(signal_OFDM));
 end
