@@ -26,7 +26,7 @@ Evaluate_eps(signal_LFM,128,seq_SNR, 1000);
 
 % sidelobe--信号旁瓣、PSL、ISL、主瓣宽度(3dB)分析
 
-% AF_Analysis--模糊函数分析
+% Analysis_CS_DFSM--使用DFSM方法进行二阶循环谱分析
 
 % CS_Analysis--二阶循环谱分析
 % Analysis_CS_FAM(fs,signal_LFM,256);
@@ -34,11 +34,16 @@ Evaluate_eps(signal_LFM,128,seq_SNR, 1000);
 % Analysis_CS_FAM(fs,signal_PRPC,256);
 % CWD分析
 
-% FS_Analysis--频谱分析
+% Analysis_Sidelobe--旁瓣分析
 
-% 
+% Evaluate_eps--epsilon分析
+seq_SNR = 0:5:50;
+DFTm = dftmtx(length(signal_LFM));
+Evaluate_eps(real(signal_LFM), 16, seq_SNR);
 
 %% 其它函数
-
-% SetDrawStyle.m--设置绘图风格
-% Q.m
+% SetDrawStyle()--设置绘图风格
+% HEX2RGB()--<'XXXXXX'>HEX格式转RGB<[12,34,56]>格式
+% RGB2HEX()--RGB<[12,34,56]>格式转<'XXXXXX'>HEX格式
+% Q()--
+% Qinv()--

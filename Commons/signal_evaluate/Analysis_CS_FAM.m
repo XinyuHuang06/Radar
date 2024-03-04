@@ -17,7 +17,6 @@ function [CS, f_plot_grid, a_plot_grid] = Analysis_CS_FAM(varargin)
     addOptional(in_par, 'N1', 32);
     addParameter(in_par, 'bool_draw', 1);
     parse(in_par, varargin{:});
-
     fs = in_par.Results.fs;
     signal = in_par.Results.signal;
     N1 = in_par.Results.N1;

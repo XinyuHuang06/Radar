@@ -20,7 +20,7 @@ function [signal_MPSK, t] = generator_PSK(varargin)
     in_par = inputParser; % Intialization
     addOptional(in_par, 'fs', 0);
     addOptional(in_par, 'fc', 0);
-    addOptional(in_par, 'Rb', 0);
+    addOptional(in_par, 'Rb', 0); % the rate of phase code transmission
     addOptional(in_par, 'phase_seq', 0);
     addOptional(in_par, 'M', 0);
     addParameter(in_par, 'noiseF', 0);
@@ -37,7 +37,7 @@ function [signal_MPSK, t] = generator_PSK(varargin)
     N = length(phase_seq); % the no. of phase code
     Nc = floor(fs/Rb);
     signal_MPSK = zeros(N*Nc,1);
-    t = 0:1/fs:(N*Nc-1)/fs;
+    t = (0:1/fs:(N*Nc-1)/fs.');
     for iN = 0:N-1
         signal_MPSK(iN*Nc+1:iN*Nc+Nc) = exp(1j*2*pi*fc*t(iN*Nc+1:iN*Nc+Nc)+...
         1j*2*pi*phase_seq(iN+1)/M);
