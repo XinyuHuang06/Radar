@@ -11,13 +11,13 @@ fc = 0;
 
 % OFDM_generator--OFDM信号
 %
-% generator_PSK--PSK信号
-%
-fs = 4*1e6;
-fc = 1*1e5;
-Rb = 1*1e5;
-code_seq = round(rand(1,64));
-[signal_BPSK, t] = generator_PSK(fs,fc,Rb,code_seq,2,'noiseF',1,'SNR',10);
+% % generator_PSK--PSK信号
+% %
+% fs = 4*1e6;
+% fc = 1*1e5;
+% Rb = 1*1e5;
+% code_seq = round(rand(1,64));
+% [signal_BPSK, t] = generator_PSK(fs,fc,Rb,code_seq,2,'noiseF',1,'SNR',10);
 
 %% 信号评估类函数测试--signal-evaluate
 % Analysis_AF--模糊函数分析
@@ -33,7 +33,7 @@ code_seq = round(rand(1,64));
 % Evaluate_eps--epsilon分析
 seq_SNR = 0:5:50;
 DFTm = dftmtx(length(signal_LFM));
-Evaluate_eps((signal_LFM), 16, seq_SNR);
+Evaluate_eps(real(signal_LFM), 16, seq_SNR);
 
 %% 其它函数
 % SetDrawStyle()--设置绘图风格
