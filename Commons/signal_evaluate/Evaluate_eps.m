@@ -10,7 +10,7 @@
 % Unauthorized copying of this file, via any medium is strictly prohibited.
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
-function [seq_eps] = Evaluate_eps(s, M, seq_SNR)
+function [seq_eps] = evaluate_eps(s, M, seq_SNR)
     Num = 100;
     N = size(s,1);
     X = size(s,2);
