@@ -1,4 +1,4 @@
-function [S, f, alfa] = Analysis_CS_DFSM(signal, fs, df, M)
+function [S, f, alfa] = Analysis_CS_DFSM(fs, signal, df, M)
 % Example:
 % :param :
 % :return :

@@ -1,23 +1,24 @@
+% Example:
+% :param :
+% :return :
+% detailed description:
+% HEX2RGB: 实现颜色HEX值转化RGB
+% 输入HEX的字符串'XXXXXX', 返回RGB值
+%------------------------------------------------------------------------------
+% Created by: Xinyu Huang.
+% On: 29/02/2024.
+% Copyright (C) 2024 Xinyu Huang (learning_huang@163.com).
+% All Rights Reserved.
+% Unauthorized copying of this file, via any medium is strictly prohibited.
+% Proprietary and confidential.
+%------------------------------------------------------------------------------
 function RGB=HEX2RGB(HEX)
-    % HEX2RGB: 实现颜色HEX值转化RGB
-    % 输入HEX的字符串'XXXXXX', 返回RGB值
-
-    % 想法
-    % 弄一个16进制数组
-    % HEX有6个字符, 用for读3次，每次读两个字符
-    % 用公式 第一个字符返回的进制位置*16加上第二个字符
-
-    H=['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','0'];
-    % 16进制表
-
+    H=['1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','0']; % Hexadecimal tab
+    RGB = zeros(3);
     for i=1:3
-        y(1)=find(H==HEX(2*i-1));
-        % 在H中查找第2i-1个字符的位置
-        y(2)=find(H==HEX(2*i));
-        % 在H中查找第2i个字符的位置
-
-        RGB(i)=y(1)*16+y(2);
-        % 用公式计算RGB的值
+        y(1)=find(H==HEX(2*i-1)); % 在H中查找第2i-1个字符的位置     
+        y(2)=find(H==HEX(2*i)); % 在H中查找第2i个字符的位置
+        RGB(i)=y(1)*16+y(2); % 用公式计算RGB的值
     end
 end
 

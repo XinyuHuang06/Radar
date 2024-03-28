@@ -15,11 +15,11 @@ function [signal_NLFM, t_grid] = generator_NLFM(varargin)
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
     in_par = inputParser;
-    addOptional(in_par, 'fs', 0);
-    addOptional(in_par, 'fc', 0);
-    addOptional(in_par, 'B', 0);
-    addOptional(in_par, 'N', 0);
-    addOptional(in_par, 'fun', 0);
+    addOptional(in_par, 'fs', 0); % 采样频率
+    addOptional(in_par, 'fc', 0); % 载波频率
+    addOptional(in_par, 'B', 0); % 带宽
+    addOptional(in_par, 'N', 0); % 信号点数
+    addOptional(in_par, 'fun', 0); % 频域信号函数
     parse(in_par, varargin{:});
     fs = in_par.Results.fs;
     fc = in_par.Results.fc;
