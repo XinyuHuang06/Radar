@@ -19,10 +19,14 @@ function [out_freseq,out_FreSpec_Ampli,out_FreSpec_Phase] = Analysis_FS(f_s,sign
     out_FreSpec_Phase = fftshift(angle(s_fredo));
     out_freseq = -f_s+(2*f_s)/N:(2*f_s)/N:f_s; % frequency sequence
     if fdraw
+        figure
+        subplot(211)
         plot(out_freseq,out_FreSpec_Ampli);
         xlabel('Frequency/Hz');
         ylabel('Normalized amplitude');
         title('Fre Spectrum')
+        subplot(212)
+        plot(out_freseq,out_FreSpec_Phase);
         SetDrawStyle;
     end
 end

@@ -40,5 +40,6 @@ function [out,PSL,ISL] = Analysis_Sidelobe(varargin)
         if bool_draw
             n_grid_plot = -N+1:1:N-1;
             plot(n_grid_plot, out);
+            xlabel('N');ylabel('dB');
         end
     end
