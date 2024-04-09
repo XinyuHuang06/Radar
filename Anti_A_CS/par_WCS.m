@@ -103,7 +103,7 @@ for i_maxnum = 1:maxnum
     'HessianFcn',@(x,lambda)quadhess(x,lambda,Q,H));
     x0 = xr; % 初始点
     [xr,fval,exitflag,output] = fmincon(@(x) x'*A1*x + BT1*x, xr,[],[],[],[],[],[],...
-        @(x) x'*x,options);
+        @(x) x'*x-1,options);
     % temp_xr = xr;
     % lambda_xr = 1; % ???
     % rho_xr = 10;
