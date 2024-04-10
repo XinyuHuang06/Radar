@@ -17,9 +17,10 @@
 % parpool(NumCores); % 开启并行化计算资源池
 clc
 clear
+
 % % 数据初始化
-N = 32; % 信号长度
-M = 4; % 窗长
+N = 128; % 信号长度
+M = 16; % 窗长
 % 目标信号，随机初始化
 x = exp(1j*2*pi*rand(N,1))/sqrt(N);  
 xr = [real(x);imag(x)]; 
@@ -29,8 +30,8 @@ br = xr;
 FN = dftmtx(N); 
 FNr = complex2real(FN);
 % cr 参考信号生成
+T = N*1e-6;
 fs = 1e6;
-T = N/fs;
 fc = 1e5;
 B = 2e5;
 c = generator_LFM(fs,fc,B,T)/sqrt(N);
@@ -82,8 +83,8 @@ for iter_1 = 1:N
         end
         temp_taf_1 = [real(temp_taf),-imag(temp_taf);imag(temp_taf),real(temp_taf)];
         temp_taf_2 = [imag(temp_taf),-real(temp_taf);real(temp_taf),imag(temp_taf)];
-        Taf_1_sparse{i_temp} = sparse(temp_taf_1);
-        Taf_2_sparse{i_temp} = sparse(temp_taf_2);
+        Taf_1_sparse{i_temp} = temp_taf_1;
+        Taf_2_sparse{i_temp} = temp_taf_2;
         if abs(iter_1-iter_2) < 10 
             omega_alpha_1(i_temp) = 0.01;
         else
@@ -92,36 +93,9 @@ for iter_1 = 1:N
     end
 end
 
-
-% % 初始化一个空的 cell 数组来存储结果
-% result = {};
-% 
-% % 创建一个副本用于搜索
-% searchArray = Taf_1_sparse;
-% 
-% % 使用一个 for 循环来遍历 Taf_1_sparse 中的每个元素
-% for i = 1:length(Taf_1_sparse)
-%     % 使用 cellfun 和 isequal 函数来找出与当前元素相同的所有元素的下标
-%     idx = find(cellfun(@(x) isequal(x, Taf_1_sparse{i}), searchArray));
-% 
-%     % 如果找到了多于一个的相同元素，那么就将这些下标添加到结果中
-%     if length(idx) > 1
-%         result{end+1} = idx;
-%         % 将已经找到的重复元素从搜索范围中移除
-%         searchArray(idx(2:end)) = {[]};
-%     end
-% end
-% 
-% % 打印结果
-% disp(result);
-
-
-
-
 clear temp_* *_temp
 Tar_out = zeros(maxnum,1);
 % % ADMM 求解
-forwaitbar = forWaitbar(maxnum);
 for i_maxnum = 1:maxnum
     % % Step 1 , Solving the x_r. 
     A1_1 = 0;
@@ -172,9 +146,10 @@ for i_maxnum = 1:maxnum
     temp_d{1} = -1;
     options = optimoptions(@fmincon,'Algorithm','interior-point',...
         'SpecifyObjectiveGradient',true,'SpecifyConstraintGradient',true,...
-        'HessianFcn',@(x,lambda)quadhess(x,lambda,A1/2,temp_H),'Display','off');
+        'HessianFcn',@(x,lambda)quadhess(x,lambda,A1/2,temp_H));
     x0 = xr; % 初始点
-    [xr,fval,exitflag,output] = fmincon(@(x) quadobj(x,A1/2,BT1',0), x0,[],[],[],[],[],[],...
+
+    [xr,fval,exitflag,output] = fmincon(@(x) quadobj(x,A1/2,BT1',0), xr,[],[],[],[],[],[],...
         @(x) quadconstr(x,temp_H,temp_k,temp_d),options);
     % % Step 2 , Solving the b_r
     A2_1 = 0;
@@ -223,8 +198,8 @@ for i_maxnum = 1:maxnum
         lambda_1(i_n) = lambda_1(i_n) + rho_1(i_n)*((xr-cr)'*chi_sparse{i_n}*(br-cr)-h-vartheta);
     end
     if i_maxnum == maxnum
+        fprintf("%f",xr'*A1*xr + BT1*xr);
     end
-    forwaitbar.show_bar;
 end
 figure;
 plot(Tar_out);

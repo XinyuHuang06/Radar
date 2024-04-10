@@ -1,4 +1,4 @@
-function [out,PSL,ISL] = Analysis_Sidelobe(varargin)
+function [out,PSL,ISL,PSLR,ISLR] = Analysis_Sidelobe(varargin)
     % Example:
     % :param :
     % :return :
@@ -14,7 +14,7 @@ function [out,PSL,ISL] = Analysis_Sidelobe(varargin)
         in_par = inputParser;
         addOptional(in_par, 'signal_1', 0);
         addOptional(in_par, 'signal_2', 0);
-        addParameter(in_par, 'bool_draw', 1);
+        addParameter(in_par, 'bool_draw', 0);
         parse(in_par,varargin{:});
         x1 = in_par.Results.signal_1;
         x2 = in_par.Results.signal_2;
@@ -29,13 +29,13 @@ function [out,PSL,ISL] = Analysis_Sidelobe(varargin)
         elseif N2>N1
             x1 = [x1;zeros(N2-N1,1)];
         end
-        out = xcorr(x1,x2,"normalized");
+        out = abs(xcorr(x1,x2));
         out = abs(out);
-        out = out/max(out);
-
-        PSL = max((out(N+1:end)));
-        ISL = sum((out(N+1:end)).^2);
-
+        P_t = out'*out;
+        PSL = max((out(1:N-1)));
+        ISL = sum((out(1:N-1)).^2);
+        PSLR = 10*log10(PSL^2/P_t^2);
+        ISLR = 10*log10(ISL/P_t^2);
         out = 10*log10(out); % dB
         if bool_draw
             n_grid_plot = -N+1:1:N-1;

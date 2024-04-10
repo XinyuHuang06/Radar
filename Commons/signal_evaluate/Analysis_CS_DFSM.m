@@ -1,5 +1,5 @@
-function [S, f, alfa] = Analysis_CS_DFSM(signal,fs, df, M)
-% Example:
+function [S, f, alfa] = Analysis_CS_DFSM(varargin)
+% Example: [S, f, alfa] = Analysis_CS_DFSM(fs, signal, df, M, 'bool_draw', 1)
 % :param :
 % :return :
 % detailed description: Cyclostationary Estimator using the Direct Frequency Smoothing Method algorithm.
@@ -11,7 +11,18 @@ function [S, f, alfa] = Analysis_CS_DFSM(signal,fs, df, M)
 % Unauthorized copying of this file, via any medium is strictly prohibited.
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
-
+in_par = inputParser;
+addOptional(in_par, 'fs', 0);
+addOptional(in_par, 'signal', 0);
+addOptional(in_par, 'df', 0);
+addOptional(in_par, 'M', 32);
+addParameter(in_par, 'bool_draw', 1);
+parse(in_par, varargin{:});
+fs = in_par.Results.fs;
+signal = in_par.Results.signal;
+M = in_par.Results.M;
+df = in_par.Results.df;
+bool_draw = in_par.Results.bool_draw;
 
 x = signal(:); % Using real part of signal
 
@@ -52,10 +63,13 @@ for k = 1:N                                % fix k
         end
     end
 end
-
 % S = abs(S./max(max(S)));% normalize output matrix
 S = real(S./M);
-mesh(alfa, f, S); grid;
-xlabel('Cycle frequency (Hz)'); ylabel('Frequency (Hz)');
-title (['Frequency Smoothing SCD ', ', df = ', int2str(df),', N = ', int2str(N)]);
-colorbar;
+if bool_draw
+    figure 
+    contour(alfa, f, S); grid;
+    xlabel('Cycle frequency (Hz)'); ylabel('Frequency (Hz)');
+    title (['Frequency Smoothing SCD ', ', df = ', int2str(df),', N = ', int2str(N)]);
+    colorbar;
+    SetDrawStyle;
+end

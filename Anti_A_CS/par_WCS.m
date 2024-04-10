@@ -1,7 +1,7 @@
 % Example:
 % :param :
 % :return :
-% detailed description: 并行化优化低截获雷达波形程序
+% detailed description: 并行化优化低截获雷达波形程序--（低维度优化/内存充裕时运行）
 %------------------------------------------------------------------------------
 % Created by: Xinyu Huang.
 % On: 26/03/2024.
@@ -17,7 +17,7 @@
 % parpool(NumCores); % 开启并行化计算资源池
 
 % % 数据初始化
-N = 128; % 信号长度
+N = 64; % 信号长度
 M = 16; % 窗长
 x = exp(1j*2*pi*rand(N,1))/sqrt(N); % 目标信号，随机初始化
 xr = [real(x);imag(x)]; 
@@ -98,21 +98,18 @@ for i_maxnum = 1:maxnum
         fprintf("迭代开始\n初始目标函数值:%d \n",xr'*A1*xr+BT1*xr);
     end
     % 如何求解此时的lambda_xr 与 xr 
-    temp_xr = xr;
-    lambda_xr = 1; % ???
-    rho_xr = 10;
-    % while true
-    % 
-    %     temp_xr = -pinv(2*A1+2*lambda_xr*eye(size(A1)))*BT1';
-    %     lambda_xr = lambda_xr + rho_xr*(temp_xr'*A1*temp_xr+BT1*temp_xr);
-    %     temp_norm = abs(temp_xr'*temp_xr-1);
-    %     if temp_norm < 1e-2
-    %         break;
-    %     end
-    % end
-    temp_xr = -pinv(2*A1+2*lambda_xr*eye(size(A1)))*BT1';
-    xr = temp_xr;
-    xr = xr/norm(xr);
+    options = optimoptions(@fmincon,'Algorithm','interior-point',...
+    'SpecifyObjectiveGradient',true,'SpecifyConstraintGradient',true,...
+    'HessianFcn',@(x,lambda)quadhess(x,lambda,Q,H));
+    x0 = xr; % 初始点
+    [xr,fval,exitflag,output] = fmincon(@(x) x'*A1*x + BT1*x, xr,[],[],[],[],[],[],...
+        @(x) x'*x-1,options);
+    % temp_xr = xr;
+    % lambda_xr = 1; % ???
+    % rho_xr = 10;
+    % temp_xr = -pinv(2*A1+2*lambda_xr*eye(size(A1)))*BT1';
+    % xr = temp_xr;
+    % xr = xr/norm(xr);
     % % Step 2 , Solving the b_r
     A2_temp1 = pagemtimes(pagemtimes(FNr,"transpose",Taf_1,"transpose"),FNr*xr); % 子项1.1
     A2_temp1 = pagemtimes(A2_temp1,"none",A2_temp1,"transpose");
@@ -158,4 +155,26 @@ for i_maxnum = 1:maxnum
     end
     
 end
-plot(Tar_out)
+figure;
+plot(Tar_out);
+exportgraphics(gcf, './output_files/out_tar_value_iters.pdf','ContentType', 'vector');
+
+figure;
+Analysis_Sidelobe(xr(1:N),xr(1:N),'bool_draw',1);hold on;
+Analysis_Sidelobe(cr(1:N),cr(1:N),'bool_draw',1);hold off;
+legend('xr','cr');
+exportgraphics(gcf, './output_files/out_sidelobe.pdf','ContentType', 'vector')
+
+figure;
+plot(xr(1:N));hold on;
+plot(cr(1:N));hold off;
+legend('xr','cr');
+exportgraphics(gcf, './output_files/xr_and_cr.pdf','ContentType', 'vector');
+
+figure 
+Analysis_CS_DFSM(xr(1:N),fs,fs/N,M);
+exportgraphics(gcf, './output_files/xr_CS.pdf','ContentType', 'vector');
+
+figure 
+Analysis_CS_DFSM(cr(1:N),fs,fs/N,M);
+exportgraphics(gcf, './output_files/cr_CS.pdf','ContentType', 'vector');
