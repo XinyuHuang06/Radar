@@ -1,4 +1,4 @@
-function [S, f, alfa] = Analysis_CS_DFSM(fs, signal, df, M)
+function [S, f, alfa] = Analysis_CS_DFSM(signal,fs, df, M)
 % Example:
 % :param :
 % :return :
@@ -55,8 +55,7 @@ end
 
 % S = abs(S./max(max(S)));% normalize output matrix
 S = real(S./M);
-figure 
-contour(alfa, f, S); grid;
+mesh(alfa, f, S); grid;
 xlabel('Cycle frequency (Hz)'); ylabel('Frequency (Hz)');
 title (['Frequency Smoothing SCD ', ', df = ', int2str(df),', N = ', int2str(N)]);
 colorbar;
