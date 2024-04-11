@@ -5,8 +5,6 @@ classdef forWaitbar < handle
         N; % the numers of 
         temp_num; % 当前循环数
         square_nums = 40; % 打印方块数
-        threshold; % 打印阈值
-        Count_p_num; % 打印计数器
         s_num; % solid_square acculation
         h_num; % hollow_square acculation
     end
@@ -16,17 +14,13 @@ classdef forWaitbar < handle
         % 初始化
             obj.N = N;
             obj.temp_num = 0;
-            obj.Count_p_num = 0;
             obj.s_num = 0;
             obj.h_num = obj.square_nums;
-            obj.threshold = fix(N/obj.square_nums);
         end
         function show_bar(obj)
-            obj.Count_p_num = obj.Count_p_num + 1;
             obj.temp_num = obj.temp_num + 1;
-            if obj.Count_p_num >= obj.threshold || obj.temp_num == obj.N || obj.temp_num == 1
+            if obj.temp_num/obj.N >= obj.s_num/obj.square_nums
                 if ( obj.s_num ~= obj.square_nums - 1 || obj.temp_num == obj.N ) && obj.temp_num <= obj.N
-                    obj.Count_p_num = 0;
                     obj.s_num = obj.s_num + 1;
                     obj.h_num = obj.h_num - 1;
                     obj.draw_bar;

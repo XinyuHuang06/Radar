@@ -26,8 +26,9 @@ bool_draw = in_par.Results.bool_draw;
 
 x = signal(:); % Using real part of signal
 
-N = (M*fs)/df;
-N = pow2 (nextpow2(N)); % windowing record for FFT
+N = length(signal);
+% N = (M*fs)/df;
+% N = pow2 (nextpow2(N)); % windowing record for FFT
 
 X = fft(x,N);               % fft of the truncated (or zero padded) time series
 X = fftshift(X);            % shift components of fft
