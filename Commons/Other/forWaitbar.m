@@ -1,14 +1,14 @@
 classdef forWaitbar < handle
     properties (Access = private)
-        solid_square = '*'; % 已完成
-        hollow_square = '-'; % 未完成
-        N; % 总循环数
+        solid_square = '*'; % The symbol of completion
+        hollow_square = '-'; % The symbol of uncompletion
+        N; % the numers of 
         temp_num; % 当前循环数
         square_nums = 40; % 打印方块数
         threshold; % 打印阈值
         Count_p_num; % 打印计数器
-        s_num; % 方块计数器1
-        h_num; % 方块计数器2
+        s_num; % solid_square acculation
+        h_num; % hollow_square acculation
     end
 
     methods
@@ -25,7 +25,7 @@ classdef forWaitbar < handle
             obj.Count_p_num = obj.Count_p_num + 1;
             obj.temp_num = obj.temp_num + 1;
             if obj.Count_p_num >= obj.threshold || obj.temp_num == obj.N || obj.temp_num == 1
-                if obj.s_num ~= obj.square_nums - 1 || obj.temp_num == obj.N
+                if ( obj.s_num ~= obj.square_nums - 1 || obj.temp_num == obj.N ) && obj.temp_num <= obj.N
                     obj.Count_p_num = 0;
                     obj.s_num = obj.s_num + 1;
                     obj.h_num = obj.h_num - 1;
@@ -39,23 +39,21 @@ classdef forWaitbar < handle
         function draw_bar(obj)
             back = repmat('\b', [1,obj.square_nums+2+4]);
             fprintf(back);
-            fprintf('<');
             if (obj.s_num > 0)
-                for i = 1:obj.s_num
-                    fprintf(obj.solid_square);
-                end
+                solid = repmat(obj.solid_square, [1,obj.s_num]);
+            else
+                solid = '';
             end
             if (obj.h_num > 0)
-                for i = 1:obj.h_num
-                    fprintf(obj.hollow_square);
-                end
+                hollow = repmat(obj.hollow_square, [1,obj.h_num]);
+            else
+                hollow = '';
             end
-            fprintf('>');
             precent = num2str(round((obj.temp_num/obj.N)*100));
             if length(precent) < 3
                 precent = [repmat(' ',[1,3-length(precent)]),precent];
             end
-            fprintf([precent,'%%']);
+            fprintf(['<',solid,hollow,'>',precent,'%%']);
             if obj.temp_num == obj.N
                 fprintf('\n');
             end

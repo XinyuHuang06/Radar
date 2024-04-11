@@ -18,7 +18,7 @@
 clc
 clear
 % % 数据初始化
-N = 32; % 信号长度
+N = 64; % 信号长度
 M = 4; % 窗长
 % 目标信号，随机初始化
 x = exp(1j*2*pi*rand(N,1))/sqrt(N);  
@@ -56,42 +56,78 @@ maxnum = 100;
 t = 8;
 
 
-% 循环谱计算矩阵 
-omega_alpha_1 = ones(N^2,1); % 循环谱加权向量
+% % 循环谱计算矩阵 % There is redundacy
+% omega_alpha_1 = ones(N^2,1); % 循环谱加权向量
+% m = -M/2+1:M/2;
+% Taf_1_sparse = cell(N^2,1);
+% Taf_2_sparse = cell(N^2,1);
+% for iter_1 = 1:N
+%     for iter_2 = 1:N
+%         i_temp = (iter_1-1)*N+iter_2;
+%         B = max(1-iter_1, 1-iter_2);
+%         A = min (N-iter_1, N-iter_2);
+%         n = m((m<=A) & (m>=B));
+%         if isempty(n)
+%             temp_taf = zeros(N,N);
+%         else
+%             % taf_1 = zeros(N,1);
+%             % taf_2 = zeros(N,1);
+%             % temp_p = iter_1 + n;
+%             % temp_q = iter_2 + n;
+%             % taf_1(temp_p) = 1;
+%             % taf_2(temp_q) = 1;
+%             % taf_1 = diag(taf_1);
+%             % taf_2 = diag(taf_2);
+%             % temp_taf = taf_1*taf_2;
+%             temp_p = iter_1 + n;
+%             temp_q = iter_2 + n;
+%             temp_taf = zeros(N,N);
+%             temp_taf(temp_p(1):temp_p(end),temp_q(1):temp_q(end)) = eye(length(temp_q));
+%         end
+%         temp_taf_1 = [real(temp_taf),-imag(temp_taf);imag(temp_taf),real(temp_taf)];
+%         temp_taf_2 = [imag(temp_taf),-real(temp_taf);real(temp_taf),imag(temp_taf)];
+%         Taf_1_sparse{i_temp} = sparse(temp_taf_1);
+%         Taf_2_sparse{i_temp} = sparse(temp_taf_2);
+%         if abs(iter_1-iter_2) < 40 
+%             omega_alpha_1(i_temp) = 0.01;
+%         else
+%             omega_alpha_1(i_temp) = 10;
+%         end
+%     end
+% end
+
+% 循环谱计算矩阵 20240410 Modified
+% 考虑到循环谱计算矩阵是对称的，在这里我们可以仅仅计算接近一半的数值，由N^2 -> (N+1)*N/2，减小接近一半的计算量与存储空间
+omega_alpha_1 = ones((N+1)*N/2,1); % 循环谱加权向量
 m = -M/2+1:M/2;
-Taf_1_sparse = cell(N^2,1);
-Taf_2_sparse = cell(N^2,1);
+Taf_1_sparse = cell((N+1)*N/2,1);
+Taf_2_sparse = cell((N+1)*N/2,1);
+i_temp = 0;
 for iter_1 = 1:N
-    for iter_2 = 1:N
-        i_temp = (iter_1-1)*N+iter_2;
+    for iter_2 = iter_1:N
+        i_temp = i_temp + 1;
         B = max(1-iter_1, 1-iter_2);
         A = min (N-iter_1, N-iter_2);
         n = m((m<=A) & (m>=B));
         if isempty(n)
             temp_taf = zeros(N,N);
         else
-            taf_1 = zeros(N,1);
-            taf_2 = zeros(N,1);
             temp_p = iter_1 + n;
             temp_q = iter_2 + n;
-            taf_1(temp_p) = 1;
-            taf_2(temp_q) = 1;
-            taf_1 = diag(taf_1);
-            taf_2 = diag(taf_2);
-            temp_taf = taf_1*taf_2;
+            temp_taf = zeros(N,N);
+            temp_taf(temp_p(1):temp_p(end),temp_q(1):temp_q(end)) = eye(length(temp_q));
         end
         temp_taf_1 = [real(temp_taf),-imag(temp_taf);imag(temp_taf),real(temp_taf)];
         temp_taf_2 = [imag(temp_taf),-real(temp_taf);real(temp_taf),imag(temp_taf)];
         Taf_1_sparse{i_temp} = sparse(temp_taf_1);
         Taf_2_sparse{i_temp} = sparse(temp_taf_2);
-        if abs(iter_1-iter_2) < 10 
-            omega_alpha_1(i_temp) = 0.01;
+        if abs(iter_1-iter_2) < 40 
+            omega_alpha_1(i_temp) = -10;
         else
             omega_alpha_1(i_temp) = 10;
         end
     end
 end
-
 
 % % 初始化一个空的 cell 数组来存储结果
 % result = {};
@@ -115,6 +151,9 @@ end
 % % 打印结果
 % disp(result);
 
+% % The initial parameter Caculation
+xr_PAPR_init = Evaluate_PAPR(xr(1:N));
+[~ ,xr_PSL_init, xr_ISL_init, xr_PSLR_init, xr_ISLR_init] = Analysis_Sidelobe(xr(1:N),xr(1:N));
 
 
 
@@ -152,9 +191,9 @@ for i_maxnum = 1:maxnum
     BT1 = BT1_1 + BT1_2 + BT1_3 + BT1_4 + BT1_5;
     % 如何求解此时的lambda_xr 与 xr 
     Tar_out(i_maxnum) = xr'*A1*xr+BT1*xr;
-    if i_maxnum == 1
-        fprintf("迭代开始\n初始目标函数值:%d \n",xr'*A1*xr+BT1*xr);
-    end
+    % if i_maxnum == 1
+    %     fprintf("迭代开始\n初始目标函数值:%d \n",xr'*A1*xr+BT1*xr);
+    % end
 
     % lambda_xr = 0; % ???
     % while true
@@ -221,8 +260,6 @@ for i_maxnum = 1:maxnum
     lambda_0 = lambda_0 + rho_0*(xr-br);
     for i_n = 1:N
         lambda_1(i_n) = lambda_1(i_n) + rho_1(i_n)*((xr-cr)'*chi_sparse{i_n}*(br-cr)-h-vartheta);
-    end
-    if i_maxnum == maxnum
     end
     forwaitbar.show_bar;
 end

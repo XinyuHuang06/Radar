@@ -29,23 +29,25 @@ x = signal(:); % Using real part of signal
 N = (M*fs)/df;
 N = pow2 (nextpow2(N)); % windowing record for FFT
 
-X = fft(x,N);   % fft of the truncated (or zero padded) time series
-X = fftshift(X);% shift components of fft
-Xc = conj(X);                 % precompute the complex conjugate vector
+X = fft(x,N);               % fft of the truncated (or zero padded) time series
+X = fftshift(X);            % shift components of fft
+Xc = conj(X);               % precompute the complex conjugate vector
 
-S = zeros (N,N);              % size of the Spectral Correlation Density matrix
-f = zeros (N,N);              % size of the frequency matrix;
-alfa = zeros (N,N);           % size of the cycle frequency matrix
-F = fs/(2*N);                 % precompute constants -  F = fs/(2*N);     
-G = fs/N;                     % precompute constants -  G = fs/N;  
-m = -M/2+1:M/2;               % set frequency smoothing window index
+S = zeros (N,N);            % size of the Spectral Correlation Density matrix
+f = zeros (N,N);            % size of the frequency matrix;
+alfa = zeros (N,N);         % size of the cycle frequency matrix
+F = fs/(2*N);               % precompute constants -  F = fs/(2*N);     
+G = fs/N;                   % precompute constants -  G = fs/N;  
+m = -M/2+1:M/2;             % set frequency smoothing window index
 
 for k = 1:N                                % fix k
     % computes vectors of f and alfa,
     % store frequency and cycle frequency data for given k.
     k1 = 1:N;
-    f(k,k1) = F*(k+k1-1) - fs/2;          % Computes f values and shift them to center in zero (f = (K+L)/2N) [1]
-    alfa(k,k1) = G*(k-k1 + N-1) - fs;       % Computes alfa values and shift them to center in zero (alfa = (K-L)/N) [1]
+    % f(k,k1) = F*(k+k1-1) - fs/2;          % Computes f values and shift them to center in zero (f = (K+L)/2N) [1]
+    % alfa(k,k1) = G*(k-k1 + N-1) - fs;       % Computes alfa values and shift them to center in zero (alfa = (K-L)/N) [1]
+    f(k,k1) = k + k1;
+    alfa(k,k1) = k - k1;
     for k1 = 1:N % fix k1 = J
 
         % calculate X(K+m) & conj (X(J+m)) for arguments of X(1:N) only
@@ -65,6 +67,7 @@ for k = 1:N                                % fix k
 end
 % S = abs(S./max(max(S)));% normalize output matrix
 S = real(S./M);
+S = abs(S./max(S(:)));
 if bool_draw
     figure 
     contour(alfa, f, S); grid;

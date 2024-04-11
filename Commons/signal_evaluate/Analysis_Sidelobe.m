@@ -1,5 +1,5 @@
 function [out,PSL,ISL,PSLR,ISLR] = Analysis_Sidelobe(varargin)
-    % Example:
+    % Example: [out,PSL,ISL,PSLR,ISLR] = Analysis_Sidelobe(signal_1, signal_2, 'bool_draw', 1)
     % :param :
     % :return :
     % detailed description:
