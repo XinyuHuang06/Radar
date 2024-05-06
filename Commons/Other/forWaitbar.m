@@ -21,12 +21,11 @@ classdef forWaitbar < handle
             obj.temp_num = obj.temp_num + 1;
             if obj.temp_num/obj.N >= obj.s_num/obj.square_nums
                 if ( obj.s_num ~= obj.square_nums - 1 || obj.temp_num == obj.N ) && obj.temp_num <= obj.N
-                    obj.s_num = obj.s_num + 1;
-                    obj.h_num = obj.h_num - 1;
+                    obj.s_num = rem(round(obj.temp_num*obj.square_nums/obj.N),obj.square_nums+1);
+                    obj.h_num = obj.square_nums-obj.s_num;
                     obj.draw_bar;
                 end
             end
-
         end
     end
     methods (Access = private)

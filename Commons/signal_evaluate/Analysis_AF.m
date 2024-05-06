@@ -1,5 +1,5 @@
-function [ambi] = Analysis_AF(varargin)
-% Example: [t_grid_plot,f_grid_plot,ambi] = AF_Analysis(signal_1,signal_2,fs,'bool_mesh',1)
+function [ambi,f_grid_plot, t_grid_plot] = Analysis_AF(varargin)
+% Example: [ambi,f_grid_plot, t_grid_plot] = AF_Analysis(signal_1,signal_2,fs,'bool_mesh',1)
 % :param signal_1: A N*1 column vector 
 % :param signal_2: A N*1 column vector
 % :param fs: the sampling rate
@@ -24,7 +24,7 @@ function [ambi] = Analysis_AF(varargin)
     signal_1 = in_par.Results.signal_1;
     signal_2 = in_par.Results.signal_2;
     fs = in_par.Results.fs;
-    bool_mesh = in_par.Results.bool_mesh; AF_Analysis(signal_1,signal_2,fs, 1)
+    bool_mesh = in_par.Results.bool_mesh;
     % Processing as column vectors
     if ~iscolumn(signal_1) 
         signal_1 = transpose(signal_1);
@@ -65,8 +65,8 @@ function [ambi] = Analysis_AF(varargin)
     ambi = [zeros(2*Nt+1, 1), ambi, zeros(2*Nt+1, 1)];
     % Plot 3D AmbiFun
     if bool_mesh
-        contour(f_grid_plot, t_grid_plot, ambi);
-        % view(-30,30);
+        mesh(f_grid_plot, t_grid_plot, ambi);
+        view(-30,30);
         xlabel('Doppler Shift/Hz');
         ylabel('Delay/\mus');
         zlabel('Normalized amplitude');

@@ -155,26 +155,8 @@ for i_maxnum = 1:maxnum
     end
     
 end
-figure;
-plot(Tar_out);
-exportgraphics(gcf, './output_files/out_tar_value_iters.pdf','ContentType', 'vector');
 
-figure;
-Analysis_Sidelobe(xr(1:N),xr(1:N),'bool_draw',1);hold on;
-Analysis_Sidelobe(cr(1:N),cr(1:N),'bool_draw',1);hold off;
-legend('xr','cr');
-exportgraphics(gcf, './output_files/out_sidelobe.pdf','ContentType', 'vector')
+% % 绘图
 
-figure;
-plot(xr(1:N));hold on;
-plot(cr(1:N));hold off;
-legend('xr','cr');
-exportgraphics(gcf, './output_files/xr_and_cr.pdf','ContentType', 'vector');
+% % 参数计算
 
-figure 
-Analysis_CS_DFSM(xr(1:N),fs,fs/N,M);
-exportgraphics(gcf, './output_files/xr_CS.pdf','ContentType', 'vector');
-
-figure 
-Analysis_CS_DFSM(cr(1:N),fs,fs/N,M);
-exportgraphics(gcf, './output_files/cr_CS.pdf','ContentType', 'vector');

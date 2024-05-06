@@ -13,26 +13,34 @@
 % OFDM_generator.m--OFDM信号
 
 % PSL_generator.m--PSK信号
-fs = 100*1e6;
-fc = 10*1e6;
-Rb = 10*1e6;
-code_seq = round(rand(1,64));
-[signal_BPSK,t] = generator_PSK(fs,fc,Rb,code_seq,2,'noiseF',1);
-
+fs = 20*1e6;
+fc = 1*1e6;
+Rb = 1*1e6;
+code_seq = round(rand(1,4));
+[signal_BPSK,t] = generator_PSK(fs,fc,Rb,code_seq,2);
+N = 128;
+M = 4;
+fs = 2e6;
+T = N/fs;
+T = 10e-6;
+fc = 1e5;
+temp_B = 10e5;
+c = generator_LFM(fs,fc,temp_B,T,'ratio',0.5,'num_pulse',5);
 %% 信号评估类函数测试--signal_evaluate
-signal_test = signal_BPSK;
+signal_test = c;
+
 % Evaluate_eps.m--测试信号Epilison值
-seq_SNR = 0:5:50;
-Evaluate_eps(signal_test,128,seq_SNR);
+% seq_SNR = 0:5:50;
+% Evaluate_eps(signal_test,128,seq_SNR);
 
 % sidelobe--信号旁瓣、PSL、ISL、主瓣宽度(3dB)分析
 
 % Analysis_CS_DFSM--使用DFSM方法进行二阶循环谱分析
 
 % CS_Analysis--二阶循环谱分析
-Analysis_CS_FAM(fs,signal_test,256);
+Analysis_CS_DFSM(fs,signal_test,fs/10,32);
 % [signal_PRPC, t] = generator_PRPC(fs, 1, 512);
-% Analysis_CS_FAM(fs,signal_PRPC,256);
+% Analysis_CS_FAM(fs,signal_test,256);
 % CWD分析
 
 % Analysis_Sidelobe--旁瓣分析

@@ -27,8 +27,8 @@ bool_draw = in_par.Results.bool_draw;
 x = signal(:); % Using real part of signal
 
 N = length(signal);
-% N = (M*fs)/df;
-% N = pow2 (nextpow2(N)); % windowing record for FFT
+N = (M*fs)/df;
+N = pow2 (nextpow2(N)); % windowing record for FFT
 
 X = fft(x,N);               % fft of the truncated (or zero padded) time series
 X = fftshift(X);            % shift components of fft
@@ -45,10 +45,10 @@ for k = 1:N                                % fix k
     % computes vectors of f and alfa,
     % store frequency and cycle frequency data for given k.
     k1 = 1:N;
-    % f(k,k1) = F*(k+k1-1) - fs/2;          % Computes f values and shift them to center in zero (f = (K+L)/2N) [1]
-    % alfa(k,k1) = G*(k-k1 + N-1) - fs;       % Computes alfa values and shift them to center in zero (alfa = (K-L)/N) [1]
-    f(k,k1) = k + k1;
-    alfa(k,k1) = k - k1;
+    f(k,k1) = F*(k+k1-1) - fs/2;          % Computes f values and shift them to center in zero (f = (K+L)/2N) [1]
+    alfa(k,k1) = G*(k-k1 + N-1) - fs;       % Computes alfa values and shift them to center in zero (alfa = (K-L)/N) [1]
+    % f(k,k1) = k + k1;
+    % alfa(k,k1) = k - k1;
     for k1 = 1:N % fix k1 = J
 
         % calculate X(K+m) & conj (X(J+m)) for arguments of X(1:N) only
@@ -66,14 +66,16 @@ for k = 1:N                                % fix k
         end
     end
 end
-% S = abs(S./max(max(S)));% normalize output matrix
-S = real(S./M);
-S = abs(S./max(S(:)));
+S = abs(S./max(max(S)));% normalize output matrix
+% S = real(S./M);
+% S = abs(S./max(S(:)));
+f = f/fs;
+alfa = alfa/fs;
 if bool_draw
-    figure 
-    contour(alfa, f, S); grid;
-    xlabel('Cycle frequency (Hz)'); ylabel('Frequency (Hz)');
-    title (['Frequency Smoothing SCD ', ', df = ', int2str(df),', N = ', int2str(N)]);
+    % contour(alfa, f, S,'LevelStep',0.02); grid;
+    contour(f, alfa, S);
+    xlabel('Frequency (Hz)');ylabel('Cycle frequency (Hz)');
+    title (['Frequency Smoothing SCD ']);
     colorbar;
     SetDrawStyle;
 end
