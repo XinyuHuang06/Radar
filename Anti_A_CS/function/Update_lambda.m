@@ -1,4 +1,7 @@
-function [lambda_0, lambda_1] = Update_lambda(N, xr, br, cr, rho_0, rho_1, lambda_0_in, lambda_1_in, h, vartheta, chi_matrix, flag_Sparse)
+function [lambda_0, lambda_1] = Update_lambda(xr, br, cr, rho_0, rho_1, lambda_0_in, lambda_1_in, h, vartheta, Data)
+    chi_matrix = Data.chi_matrix;
+    flag_Sparse = Data.sparse;
+    N = Data.N;
     lambda_0 = lambda_0_in + rho_0*(xr-br);
     lambda_1 = zeros(size(lambda_1_in));
     if flag_Sparse

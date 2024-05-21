@@ -24,14 +24,15 @@ M = in_par.Results.M;
 df = in_par.Results.df;
 bool_draw = in_par.Results.bool_draw;
 
-x = signal(:); % Using real part of signal
-
+x = real(signal); % Using real part of signal
+x = x(:);
 N = length(signal);
 N = (M*fs)/df;
 N = pow2 (nextpow2(N)); % windowing record for FFT
 
 X = fft(x,N);               % fft of the truncated (or zero padded) time series
 X = fftshift(X);            % shift components of fft
+X = X*2/sqrt(N);
 Xc = conj(X);               % precompute the complex conjugate vector
 
 S = zeros (N,N);            % size of the Spectral Correlation Density matrix
@@ -66,8 +67,10 @@ for k = 1:N                                % fix k
         end
     end
 end
-S = abs(S./max(max(S)));% normalize output matrix
-% S = real(S./M);
+% S = abs(S./max(max(S)));% normalize output matrix
+S = abs(real(S));
+S = S/max(S(:));
+% S = S/max(S(:));
 % S = abs(S./max(S(:)));
 f = f/fs;
 alfa = alfa/fs;

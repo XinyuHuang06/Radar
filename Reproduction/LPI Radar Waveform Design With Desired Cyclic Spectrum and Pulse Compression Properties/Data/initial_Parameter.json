@@ -1,0 +1,19 @@
+{
+    "Max_ItersNum": 100,
+    "Threshold": 20,
+
+    "Flag":{
+        "Plot": true,
+        "ExportFigure": false,
+        "PrintLog"  : true,
+        "Sparse"    : true
+    },
+    "signal": {
+        "Type": "LFM",
+        "M": 4,
+        "T": 2e-6,
+        "fc": 0,
+        "fs": 60e6,
+        "B": 20e6
+    }
+}

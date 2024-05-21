@@ -1,4 +1,11 @@
-function [Tar_sum,Tar_1, Tar_2, Tar_3, Tar_4, Tar_5] = Debug_fun(N, FNr, xr, br, cr, omega_alpha_1, rho_0, rho_1, lambda_0, lambda_1, h, vartheta, Taf_1, Taf_2, chi_matrix, flag_Sparse)
+function [Tar_sum,Tar_1, Tar_2, Tar_3, Tar_4, Tar_5] = Debug_fun(xr, br, cr, rho_0, rho_1, lambda_0, lambda_1, h, vartheta, Data)
+    FNr = Data.FNr;
+    flag_Sparse = Data.sparse;
+    chi_matrix = Data.chi_matrix;
+    Taf_1 = Data.Taf_1;
+    Taf_2 = Data.Taf_2;
+    omega_alpha_1 = Data.omega_alpha;
+
     Tar_1 = Caculate_TarFunCValue(FNr, xr, Taf_1, Taf_2, flag_Sparse, omega_alpha_1);
     Tar_2 = lambda_0'*(xr-br);
     % Tar_2 = norm(xr-br);

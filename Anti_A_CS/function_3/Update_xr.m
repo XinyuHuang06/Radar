@@ -1,5 +1,4 @@
 function [xr] = Update_xr(A1,BT1,xr_in)
-    
     % Constant Modules Constraints 1/2*xT*H*x + k*x + d = 0 => xT*(2*I)*x + 0*x -1 = 0
     N = length(xr_in)/2;
     temp_H = cell(1);temp_k= cell(1);temp_d= cell(1);

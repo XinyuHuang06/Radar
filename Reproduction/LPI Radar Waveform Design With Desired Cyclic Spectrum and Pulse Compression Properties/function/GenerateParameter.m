@@ -1,4 +1,4 @@
-function [Data] = Generate_data(N, M, flag_Sparse, threshhold)
+function ParameterPackets = GenerateParameter(N, M, Flag_Sparse, threshhold)
     % FNr
     FN = dftmtx(N); 
     Fshift = zeros(N);
@@ -8,7 +8,7 @@ function [Data] = Generate_data(N, M, flag_Sparse, threshhold)
     FNr = complex2real(FN);
     % omega_alpha_1
     omega_alpha_1 = ones((N+1)*N/2,1);
-    if flag_Sparse
+    if Flag_Sparse
         chi_matrix = cell(N,1);
         for i_temp = 1:N
             matrix_temp = zeros(N,N);
@@ -87,7 +87,13 @@ function [Data] = Generate_data(N, M, flag_Sparse, threshhold)
         end  
     end
     % Intialize Data Struct
-    Data = struct('chi_matrix',{chi_matrix},'Taf_1',{Taf_1},'Taf_2',{Taf_2},'FNr',{FNr},'omega_alpha',{omega_alpha_1},'Taf',{Taf},'sparse',{flag_Sparse});
-    Data.N = N;
-    Data.FN = FN;
+    ParameterPackets.CHIMatrix = chi_matrix;
+    ParameterPackets.Taf1 = Taf_1;
+    ParameterPackets.Taf2 = Taf_2;
+    ParameterPackets.FNr  = FNr;
+    ParameterPackets.OmegaAlpha = omega_alpha_1;
+    ParameterPackets.Taf  = Taf;
+    ParameterPackets.FlagSparse = Flag_Sparse;
+    ParameterPackets.N = N;
+    ParameterPackets.FN = FN;
 end

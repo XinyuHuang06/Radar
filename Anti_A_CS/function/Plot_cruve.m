@@ -40,14 +40,15 @@ function [] = Plot_cruve(xr,br,cr,fs,N,M,TarS,flag_PlotAndExport)
         fig10 = figure;
         TarSfields = fieldnames(TarS);
         lenged_str = cell(length(TarSfields),1);
-        for i_Tar = 1:length(TarSfields)
+        % for i_Tar = 1:length(TarSfields)
+        for i_Tar = 2
             key_t = TarSfields{i_Tar};
             value = TarS.(key_t);
             plot(0:length(value)-1,value); hold on;
-            lenged_str{i_Tar} = key_t;
+            lenged_str{1} = key_t;
         end
         hold off;
-        legend(lenged_str);
+        legend(lenged_str{1});
         SetDrawStyle;
         exportgraphics(fig2, './output_files/Fig2_Sidelobe.png','ContentType', 'image');
         exportgraphics(fig3, './output_files/Fig3_TimeDomain.png','ContentType', 'image');

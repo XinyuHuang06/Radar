@@ -1,7 +1,17 @@
-function h = Update_h(xr, br, cr, rho_1, lambda_1, vartheta, r, Data)
-    chi_matrix = Data.chi_matrix;
-    flag_Sparse = Data.sparse;
-    N = Data.N;
+function h = Update_h(DataSet, Data)
+    % Unpacket Data
+    flag_Sparse = Data.FlagSparse;
+    chi_matrix = Data.CHIMatrix;
+    % Unpacket DataSet
+    xr = DataSet.xr;
+    br = DataSet.br;
+    cr = DataSet.cr;
+    lambda_1 = DataSet.lambda_1;
+    rho_1 = DataSet.rho_1;
+    r = DataSet.r;
+    vartheta = DataSet.vartheta;
+    N = DataSet.N;
+
     A3 = sum(rho_1)/2;
     BT3_1 = -sum(lambda_1);
     if flag_Sparse

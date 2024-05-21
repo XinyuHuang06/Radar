@@ -40,7 +40,9 @@ function [signal_LFM, t] = generator_LFM(varargin)
     % Generate the signal
     N = ceil(T*fs); % The no. of data sample
     k = B/T; % The slope of LFM
-    t = (0:1/fs:(N-1)/fs).';
+    % t = (-T/2+T/N:T/N:T/2)';
+    % t = (0:1/fs:(N-1)/fs).';
+    t = -T/2+1/fs:1/fs:T/2;
     signal_carrier = exp(1j*2*pi*fc*t);
     if type
         signal_LFM = exp(1j*pi*(2*B*t-k*t.^2));
@@ -63,4 +65,10 @@ function [signal_LFM, t] = generator_LFM(varargin)
     if noiseF
         signal_LFM = awgn(signal_LFM, SNR,'measured');
     end
+    % if nargout == 1
+    %     return signal_LFM
+    % elseif nargout == 2 
+    % 
+    % end
+    signal_LFM = signal_LFM(:);
 end

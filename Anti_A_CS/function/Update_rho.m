@@ -9,26 +9,22 @@ function [rho_0,rho_1,delta_0,delta_1] = Update_rho(rho_0_k,rho_1_k,xr_k,br_k,h_
     end
     pen_2 = pen2_der_rho1(xr,br,cr,vartheta,h,chi_matrix,flag_Sparse);
     pen_2_k = pen2_der_rho1(xr_k,br_k,cr,vartheta,h_k,chi_matrix,flag_Sparse);
-    % delta_1 = pen_2 - pen_2_k; 
-    % if sum(delta_1) < 0
+    % % 更新策略1
+    delta_1 = pen_2 - pen_2_k; 
+    temp_multi = ones(size(rho_1_k));
+    temp_multi(delta_1 < 0) = 1 * xi_inc;
+    temp_multi(delta_1 > 0) = 1 / xi_dec;
+    rho_1 = rho_1_k.*temp_multi;
+
+    % % 更新策略2
+    % delta_1 = sum(pen_2-pen_2_k);
+    % if delta_1 < 0
     %     rho_1 = rho_1_k * xi_inc;
-    % elseif sum(delta_1) > 0
+    % elseif delta_1 > 0
     %     rho_1 = rho_1_k / xi_dec;
     % else
     %     rho_1 = rho_1_k;
     % end
-    % temp_multi = ones(size(rho_1_k));
-    % temp_multi(delta_1 < -1e-7) = 1 * xi_inc;
-    % temp_multi(delta_1 > 1e-7) = 1 / xi_dec;
-    % rho_1 = rho_1_k.*temp_multi;
-    delta_1 = sum(pen_2-pen_2_k);
-    if delta_1 < 0
-        rho_1 = rho_1_k * xi_inc;
-    elseif delta_1 > 0
-        rho_1 = rho_1_k / xi_dec;
-    else
-        rho_1 = rho_1_k;
-    end
     % fid = fopen("output_files/rho_1.log","a+");
     % fprintf(fid, '%.2d\n',delta_1);
     % fclose(fid);

@@ -1,11 +1,23 @@
-function [A1,BT1,Tar_seq] = Caculate_matrix_xr(xr_in, br, cr, rho_0, rho_1, lambda_0, lambda_1, h, vartheta, Data)
-    omega_alpha_1 = Data.omega_alpha;
-    Taf_1 = Data.Taf_1;
-    Taf_2 = Data.Taf_2;
-    chi_matrix = Data.chi_matrix;
+function xr_out = Update_xr(DataSet, Data)
+    % Unpacket Data
     FNr = Data.FNr;
-    flag_Sparse = Data.sparse;
-    N = Data.N;
+    flag_Sparse = Data.FlagSparse;
+    chi_matrix = Data.CHIMatrix;
+    Taf_1 = Data.Taf1;
+    Taf_2 = Data.Taf2;
+    omega_alpha_1 = Data.OmegaAlpha;
+    % Unpacket DataSet
+    xr = DataSet.xr;
+    br = DataSet.br;
+    cr = DataSet.cr;
+    lambda_0 = DataSet.lambda_0;
+    lambda_1 = DataSet.lambda_1;
+    rho_0 = DataSet.rho_0;
+    rho_1 = DataSet.rho_1;
+    h = DataSet.h;
+    vartheta = DataSet.vartheta;
+    N = DataSet.N;
+    % Update xr
     if flag_Sparse
         % % A1
         XA1_1_1 = cellfun( @(x) FNr'*(x)'*(FNr*br), Taf_1, "UniformOutput",false);
@@ -29,8 +41,8 @@ function [A1,BT1,Tar_seq] = Caculate_matrix_xr(xr_in, br, cr, rho_0, rho_1, lamb
         XBT1_5 = cellfun(@(rho,chi) -(vartheta+h)*rho*(br-cr)'*chi', num2cell(rho_1), chi_matrix,"UniformOutput",false);
         BT1_5 =  (sum(reshape([XBT1_5{:}]',2*N,N), 2)');
         
-        % BT1 = BT1_1 + BT1_2 + BT1_3 + BT1_4 + BT1_5;
-        BT1 = BT1_2 + BT1_3 + BT1_4 + BT1_5;
+        BT1 = BT1_1 + BT1_2 + BT1_3 + BT1_4 + BT1_5;
+        % BT1 = BT1_2 + BT1_3 + BT1_4 + BT1_5;
         % % Target Value Test
         % C1
         C1_1 = -lambda_0'*br;
@@ -60,14 +72,52 @@ function [A1,BT1,Tar_seq] = Caculate_matrix_xr(xr_in, br, cr, rho_0, rho_1, lamb
         BT1_4 = sum(bsxfun(@times, BT1_4_temp1, reshape(-rho_1, 1, 1, [])), 3);
         BT1_5_temp1 = pagemtimes(br-cr,"transpose",chi_matrix,"transpose");
         BT1_5 = -(vartheta+h)*sum(bsxfun(@times, BT1_5_temp1, reshape(rho_1, 1, 1, [])), 3);
-        % BT1 = BT1_1 + BT1_2 + BT1_3 + BT1_4 + BT1_5;
-        BT1 = BT1_2 + BT1_3 + BT1_4 + BT1_5;
+        BT1 = BT1_1 + BT1_2 + BT1_3 + BT1_4 + BT1_5;
+        % BT1 = BT1_2 + BT1_3 + BT1_4 + BT1_5;
     end
-    Tar_seq = zeros(1,6);
-    Tar_seq(1) = xr_in'*A1*xr_in+BT1*xr_in+C1;
-    Tar_seq(2) = xr_in'*A1_1*xr_in;
-    Tar_seq(3) = BT1_1*xr_in + C1_1;
-    Tar_seq(4) = xr_in'*A1_3*xr_in + BT1_2*xr_in + C1_2;
-    Tar_seq(5) = C1_3 + BT1_3*xr_in;
-    Tar_seq(6) = C1_4 + xr_in'*A1_2*xr_in + (BT1_4+BT1_5)*xr_in;
+    % Constant Modules Constraints 1/2*xT*H*x + k*x + d = 0 => xT*(2*I)*x + 0*x -1 = 0
+    N = length(xr)/2;
+    temp_H = cell(1);temp_k= cell(1);temp_d= cell(1);
+    temp_H{1} = eye(2*N)*2;temp_k{1} = zeros(2*N,1);temp_d{1} = -N;
+    options = optimoptions(@fmincon,'Algorithm','interior-point',...
+        'SpecifyObjectiveGradient',true,'SpecifyConstraintGradient',true,...
+        'HessianFcn',@(x,lambda)quadhess(lambda,A1*2,temp_H),'Display','off');
+    [xr_out,~,~,~] = fmincon(@(x) quadobj(x,A1*2,BT1',0), xr,[],[],[],[],[],[],...
+        @(x) quadconstr(x,temp_H,temp_k,temp_d),options);
+    % Caculate the new xr
+    % xr_out = (A1 + 2*temp_lambda)/B;
+    % xr'*A1*xr + BT1*xr
+    % xr_out'*A1*xr_out + BT1*xr_out
+end
+
+
+function [y,grady] = quadobj(x,Q,f,c)
+    y = 1/2*x'*Q*x + f'*x + c;
+    if nargout > 1
+        grady = Q*x + f;
+    end
+end
+
+function [y,yeq,grady,gradyeq] = quadconstr(x,H,k,d)
+    jj = length(H);  % jj is the number of equality constraints
+    yeq = zeros(1,jj);
+    for i = 1:jj
+        yeq(i) = 1/2*x'*H{i}*x + k{i}'*x + d{i};
+    end
+    y = [];
+    if nargout > 2
+        gradyeq = zeros(length(x),jj);
+        for i = 1:jj
+            gradyeq(:,i) = H{i}*x + k{i};
+        end
+    end
+    grady = [];
+end
+
+function hess = quadhess(lambda,Q,H)
+    hess = Q;
+    jj = length(H);  % jj is the number of equality constraints
+    for i = 1:jj
+        hess = hess + lambda.eqnonlin(i)*H{i};
+    end
 end

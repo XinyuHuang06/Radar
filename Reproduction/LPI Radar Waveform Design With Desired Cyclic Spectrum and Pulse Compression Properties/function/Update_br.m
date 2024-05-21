@@ -1,14 +1,26 @@
-function [br] = Update_br(xr, br_in, cr, rho_0, rho_1, lambda_0, lambda_1, h, vartheta, Data)
-    omega_alpha_1 = Data.omega_alpha;
-    Taf_1 = Data.Taf_1;
-    Taf_2 = Data.Taf_2;
-    chi_matrix = Data.chi_matrix;
+function br_out = Update_br(DataSet, Data)
+    % Unpacket Data
     FNr = Data.FNr;
-    flag_Sparse = Data.sparse;
-    N = Data.N;
+    flag_Sparse = Data.FlagSparse;
+    chi_matrix = Data.CHIMatrix;
+    Taf_1 = Data.Taf1;
+    Taf_2 = Data.Taf2;
+    omega_alpha_1 = Data.OmegaAlpha;
+    % Unpacket DataSet
+    xr = DataSet.xr;
+    br = DataSet.br;
+    cr = DataSet.cr;
+    lambda_0 = DataSet.lambda_0;
+    lambda_1 = DataSet.lambda_1;
+    rho_0 = DataSet.rho_0;
+    rho_1 = DataSet.rho_1;
+    h = DataSet.h;
+    vartheta = DataSet.vartheta;
+    N = DataSet.N;
+
     if flag_Sparse
-        XA2_1_1 = cellfun( @(x) FNr'*(x)'*(FNr*xr), Taf_1, "UniformOutput",false);
-        XA2_1_2 = cellfun( @(x) FNr'*(x)'*(FNr*xr), Taf_2, "UniformOutput",false);
+        XA2_1_1 = cellfun( @(Taf) FNr'*(Taf)'*(FNr*xr), Taf_1, "UniformOutput",false);
+        XA2_1_2 = cellfun( @(Taf) FNr'*(Taf)'*(FNr*xr), Taf_2, "UniformOutput",false);
         A2_1_temp = (cellfun( @(x1,x2,omega_alpha) omega_alpha*(x1*x1'+x2*x2'), XA2_1_1, XA2_1_2, num2cell(omega_alpha_1), "UniformOutput",false))';
         A2_1_temp = reshape([A2_1_temp{:}],2*N, 2*N, (N+1)*N/2);
         A2_1 = sum(A2_1_temp, 3);
@@ -52,14 +64,14 @@ function [br] = Update_br(xr, br_in, cr, rho_0, rho_1, lambda_0, lambda_1, h, va
         BT2 = BT2_1 + BT2_2 + BT2_3 + BT2_4 + BT2_5;
         % BT2 = BT2_2 + BT2_3 + BT2_4 + BT2_5;
     end
-    % br = -inv(2*A2)*BT2';
+    % br_out = -(2*A2)\BT2';
 
     temp_H = cell(1);temp_k= cell(1);temp_d= cell(1);
-    temp_H{1} = eye(2*N)*2;temp_k{1} = zeros(2*N,1);temp_d{1} = -1;
+    temp_H{1} = eye(2*N)*2;temp_k{1} = zeros(2*N,1);temp_d{1} = -N;
     options = optimoptions(@fmincon,'Algorithm','interior-point',...
         'SpecifyObjectiveGradient',true,'SpecifyConstraintGradient',true,...
         'HessianFcn',@(x,lambda)quadhess(lambda,A2*2,temp_H),'Display','off');
-    [br,~,~,~] = fmincon(@(x) quadobj(x,A2*2,BT2',0), br_in,[],[],[],[],[],[],...
+    [br_out,~,~,~] = fmincon(@(x) quadobj(x,A2*2,BT2',0), br,[],[],[],[],[],[],...
         @(x) quadconstr(x,temp_H,temp_k,temp_d),options);
 end
 

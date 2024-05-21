@@ -20,14 +20,14 @@ code_seq = round(rand(1,4));
 [signal_BPSK,t] = generator_PSK(fs,fc,Rb,code_seq,2);
 N = 128;
 M = 4;
-fs = 2e6;
+fs = 7e3;
 T = N/fs;
-T = 10e-6;
-fc = 1e5;
-temp_B = 10e5;
-c = generator_LFM(fs,fc,temp_B,T,'ratio',0.5,'num_pulse',5);
+T = 128e-3;
+fc = 1e3;
+temp_B = 2e3;
+signal_LFM = generator_LFM(fs,fc,temp_B,T);
 %% 信号评估类函数测试--signal_evaluate
-signal_test = c;
+signal_test = signal_BPSK;
 
 % Evaluate_eps.m--测试信号Epilison值
 % seq_SNR = 0:5:50;
@@ -38,7 +38,7 @@ signal_test = c;
 % Analysis_CS_DFSM--使用DFSM方法进行二阶循环谱分析
 
 % CS_Analysis--二阶循环谱分析
-Analysis_CS_DFSM(fs,signal_test,fs/10,32);
+[S,f,alfa] = Analysis_CS_DFSM(fs,(signal_test),128,32,'bool_draw',1);
 % [signal_PRPC, t] = generator_PRPC(fs, 1, 512);
 % Analysis_CS_FAM(fs,signal_test,256);
 % CWD分析

@@ -78,27 +78,46 @@
 % figure
 % contour(f,alfa,CS_2);
 
-
 % % 测试3
-tic
-num_Mator = 2000;
-N = 256;
-M = 16;
-x =  exp(1j*2*pi*rand(N,1))/sqrt(N);
-fs = 1e6;
+num_Mator = 100;
+N = 512;
+M = 4;
+fs = 2000;
+fc = 500;
 iter_waitbar = forWaitbar(num_Mator);
 Out = 0;
-df = fs/10;
+df = 4;
+t = (0:1/fs:(N-1)/fs)';
 parfor i = 1:num_Mator
-    [CS,f1,alfa1] = Analysis_CS_DFSM(fs,x,df,M,'bool_draw',0);
+    % x =  exp(1j*2*pi*rand(N,1));
+    x = randn(N,1) + 1j*randn(N,1);
+    [CS,f1,alfa1] = Analysis_CS_DFSM(fs,real(x),df,M,'bool_draw',0);
     Out = Out + CS/num_Mator;
-    % iter_waitbar.show_bar;
 end
-[CS,f,alfa] = Analysis_CS_DFSM(fs,x,df,M,'bool_draw',0);
-contour(f, alfa, Out); grid on;xlabel('Frequency (Hz)');ylabel('Cycle frequency (Hz)');
+x =  exp(1j*2*pi*rand(N,1)+1j*2*pi*fc*t);
+[CS,f,alfa] = Analysis_CS_DFSM(fs,real(x),df,M,'bool_draw',0);
+contour(f, alfa, abs(Out)); grid on;xlabel('Frequency (Hz)');ylabel('Cycle frequency (Hz)');
 title (['Frequency Smoothing SCD ']);
 colormap(othercolor('PuBu7'));
 colorbar; 
-% SetDrawStyle;
-exportgraphics(gcf, './output_files/ideal_CS.png','ContentType', 'image');
-toc
+SetDrawStyle;
+exportgraphics(gcf, './output_files/ideal_CS.png','ContentType', 'image',"Resolution", 400);
+max(Out(:))
+max(CS(:))
+figure 
+alpha_profile = diag(fliplr(Out));
+% alpha_profile = alpha_profile/max(alpha_profile);
+plot(alpha_profile)
+
+% % % Test 4
+% num_Mator = 100;
+% iter_waitbar = forWaitbar(num_Mator);
+% Out = 0;
+% N = 512;
+% M = 4;
+% parfor i = 1:num_Mator
+%     % x =  exp(1j*2*pi*rand(N,1));
+%     x = randn(N,1) + 1j*randn(N,1);
+%     [CS,i_p,i_q] = WCS_test(real(x),N,M);
+%     Out = Out + CS/num_Mator;
+% end
