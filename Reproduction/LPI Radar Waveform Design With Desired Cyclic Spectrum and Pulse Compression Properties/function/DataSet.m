@@ -1,13 +1,33 @@
-function DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N)
-    DataSetPackets.xr = xr;
-    DataSetPackets.br = br;
-    DataSetPackets.cr = cr;
-    DataSetPackets.rho_0 = rho_0;
-    DataSetPackets.rho_1 = rho_1;
-    DataSetPackets.lambda_0 = lambda_0;
-    DataSetPackets.lambda_1 = lambda_1;
-    DataSetPackets.r = r;
-    DataSetPackets.h = h;
-    DataSetPackets.vartheta = vartheta;
-    DataSetPackets.N = N;
+classdef DataSet < handle
+    properties (Access = public)
+        packets;
+    end
+
+    methods
+        function obj = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N)
+            obj.packets.xr = xr;
+            obj.packets.br = br;
+            obj.packets.cr = cr;
+            obj.packets.rho_0 = rho_0;
+            obj.packets.rho_1 = rho_1;
+            obj.packets.lambda_0 = lambda_0;
+            obj.packets.lambda_1 = lambda_1;
+            obj.packets.r = r;
+            obj.packets.h = h;
+            obj.packets.vartheta = vartheta;
+            obj.packets.N = N;
+        end
+    end
+    methods (Access = public)
+        function update(obj, value, str)
+            if any( contains(fieldnames(obj.packets),str) )
+                obj.packets.(str) = value;
+            else
+                fprintf('Unknown keywords!\n');
+            end
+        end
+    end
 end
+
+
+

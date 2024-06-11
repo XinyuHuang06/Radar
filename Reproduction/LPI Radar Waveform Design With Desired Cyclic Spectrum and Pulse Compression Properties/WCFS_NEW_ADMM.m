@@ -10,7 +10,8 @@
 % Unauthorized copying of this file, via any medium is strictly prohibited.
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
-clc;clear all; close all;
+% Jsonlab
+clc;clear; close all;
 % % Intialization
 OutFolderPath = 'Output';
 % Load data.
@@ -35,11 +36,11 @@ cr = [real(c);imag(c)];
 
 % % Intialize the parameter of ADMM.
 % The coef of Lagrange terms.
-lambda_0 = 10*ones(2*N,1); 
-lambda_1 = 10*ones(N,1); 
+lambda_0 = 0*ones(2*N,1); 
+lambda_1 = 0*ones(N,1); 
 % The coef of penalty terms.
-rho_0 = 1;
-rho_1 = 1*ones(N,1);
+rho_0 = 1e-3;
+rho_1 = 1e-3*ones(N,1);
 % r: The barrier function parameter h: The 
 r = 0.01;
 h = -0.01;
@@ -49,28 +50,26 @@ vartheta = 0.1;
 DataRecordPack = DataRecord(Max_ItersNum);
 % The initial parameter Caculation
 DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
-DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets, ParameterPackets), 1);
+DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets.packets, ParameterPackets), 1);
 % % 
 % % ADMM Iterations
 for i_m = 1:Max_ItersNum
-    % % Step 1 , Solving the x_r. 
-    xr = Update_xr(DataSetPackets, ParameterPackets);
-    % % Step 2 , Solving the b_r
-    br = Update_br(DataSetPackets, ParameterPackets);
-    % % Step 3 , Solving the h
-    h = Update_h(DataSetPackets, ParameterPackets);
-    % % Step 4 , Solving the rho_0 and rho_1
-    [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);
-    % % Step 5 , Solving the lambda_0 and lambda_1
-    [lambda_0, lambda_1] = Update_lambda(DataSetPackets, ParameterPackets);
+    % % ADMM update
+    xr = Update_xr(DataSetPackets.packets, ParameterPackets);% % Step 1 , Solving the x_r. 
+    DataSetPackets.update(xr,'xr');
+    br = Update_br(DataSetPackets.packets, ParameterPackets);% % Step 2 , Solving the b_r
+    DataSetPackets.update(br,'br');
+    h = Update_h(DataSetPackets.packets, ParameterPackets);% % Step 3 , Solving the h
+    DataSetPackets.update(h,'h');
+    % [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);% % Step 4 , Solving the rho_0 and rho_1
+    [lambda_0, lambda_1] = Update_lambda(DataSetPackets.packets, ParameterPackets);% % Step 5 , Solving the lambda_0 and lambda_1
+    DataSetPackets.update(lambda_0,'lambda_0');
+    DataSetPackets.update(lambda_1,'lambda_1');
     % % Other
-    % Data Record
-    DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
-    DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets, ParameterPackets), i_m + 1);
-    % progress bar
-    forwaitbar.show_bar;
+    DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets.packets, ParameterPackets), i_m + 1);
+    forwaitbar.show_bar; % progress bar
 end
 clear *_k
 % % 
-PlotAndExport(DataSetPackets, DataRecordPack, InitialParameter, OutFolderPath);
+PlotAndExport(DataSetPackets.packets, DataRecordPack, InitialParameter, OutFolderPath);
 rmpath('function/');

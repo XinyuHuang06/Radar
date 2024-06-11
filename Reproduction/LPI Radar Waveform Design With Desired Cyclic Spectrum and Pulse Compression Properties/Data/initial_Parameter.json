@@ -1,5 +1,5 @@
 {
-    "Max_ItersNum": 100,
+    "Max_ItersNum": 30,
     "Threshold": 20,
 
     "Flag":{
