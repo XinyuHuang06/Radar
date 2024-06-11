@@ -11,7 +11,7 @@
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
 clc; clear; close all;
-N = 256;
+N = 128;
 M =4;
 max_iternums = 100;
 % 
@@ -50,53 +50,45 @@ if ~issymmetric(taf)
     fprintf('为非对称矩阵！\n'); % 若为非对称矩阵终止脚本。
     return;
 end
-% if ~ishermitian(S)
-%     fprintf('为非共轭对称矩阵！\n'); % 若为非共轭堆成矩阵终止脚本。
-%     return;
-% end
+if sum(S' ~= S)
+    fprintf('为非共轭对称矩阵！\n'); % 若为非共轭堆成矩阵终止脚本。
+    
+end
 % % 
-Analysis_CS_DFSM(1e6, x, 1e6/100, M, 'bool_draw', 1)
+
 target_seq = zeros(max_iternums,1);
 for i_m = 1:max_iternums
     target_seq(i_m) = real(x'*S*x);
     for k = 1:N
-
         % Coordinate-Descent Iterations
-        x_nonk = x;
-        x_nonk(k) = 0;
-        e_k = zeros(N,1);
-        e_k(k) = 1;
-        x_k = exp(-1j*angle(x_nonk'*S*e_k));
-
-        x(k) = x_k;
-        % a_k = real(S(k,k));
-        % S_k_n = S(k,:); S_k_n(k) = 0;
-        % S_m_k = S(:,k); S_m_k(k) = 0;
-        % temp_x = x; 
-        % b_k = real(S_k_n*temp_x) + real(temp_x'*S_m_k);
-        % c_k = imag(S_k_n*temp_x) + imag(temp_x'*S_m_k);
-        % S_m_n = S; S_m_n(k,:) = 0; S_m_n(:,k) = 0;
-        % d_k = real(temp_x'*S_m_n*temp_x);
-        % if a_k > 0
-        %     % a_k > 0 
-        %     PointSet = roots([4*a_k, -2*a_k, 0, -2*b_k, 2*a_k-4*c_k, 2*b_k]);
-        %     PointSet = PointSet(real(PointSet)==PointSet);
-        %     temp_value = zeros(size(PointSet));
-        %     for i_point = 1:length(PointSet)
-        %         temp_value(i_point) = f_beta_k(a_k,b_k,c_k,d_k,PointSet(i_point));
-        %     end
-        %     [~,max_index] = min(temp_value);
-        %     beta_k = PointSet(max_index); % 找到最优的beta_K值
-        % elseif a_k < 0
-        %     beta_k = -100000;
-        % end
+        a_k = real(S(k,k));
+        S_k_n = S(k,:); S_k_n(k) = 0;
+        S_m_k = S(:,k); S_m_k(k) = 0;
+        temp_x = x; 
+        b_k = real(S_k_n*temp_x) + real(temp_x'*S_m_k);
+        c_k = imag(S_k_n*temp_x) + imag(temp_x'*S_m_k);
+        S_m_n = S; S_m_n(k,:) = 0; S_m_n(:,k) = 0;
+        d_k = real(temp_x'*S_m_n*temp_x);
+        if a_k > 0
+            % a_k > 0 
+            PointSet = roots([4*a_k, -2*a_k, 0, -2*b_k, 2*a_k-4*c_k, 2*b_k]);
+            PointSet = PointSet(real(PointSet)==PointSet);
+            temp_value = zeros(size(PointSet));
+            for i_point = 1:length(PointSet)
+                temp_value(i_point) = f_beta_k(a_k,b_k,c_k,d_k,PointSet(i_point));
+            end
+            [~,max_index] = min(temp_value);
+            beta_k = PointSet(max_index); % 找到最优的beta_K值
+        elseif a_k < 0
+            beta_k = -100000;
+        end
     
-        % beta_k1 = tan(angle(x(k))/2);
-        % beta_k2 = beta_k;
+        beta_k1 = tan(angle(x(k))/2);
+        beta_k2 = beta_k;
  
 
-        % temp_x = x;
-        % x(k) = exp(1j*2*atan(beta_k));
+        temp_x = x;
+        x(k) = exp(1j*2*atan(beta_k));
         % disp([i_m,k]);
         % fprintf(['fvalue--Pre:%d\n','After:%d\n'],...
         %     f_beta_k(a_k,b_k,c_k,d_k,beta_k1),f_beta_k(a_k,b_k,c_k,d_k,beta_k2));
@@ -116,7 +108,7 @@ for i_m = 1:max_iternums
     end
 end
 
-Analysis_CS_DFSM(1e6, x, 1e6/100, M, 'bool_draw', 1)
+
 
 function value = f_beta_k(a_k,b_k,c_k,d_k,beta_k)
     value = g_beta_k(a_k,b_k,c_k,d_k,beta_k)/h_beta_k(beta_k);
