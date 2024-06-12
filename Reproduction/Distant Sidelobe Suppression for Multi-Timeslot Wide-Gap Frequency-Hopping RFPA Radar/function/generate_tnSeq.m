@@ -10,6 +10,7 @@
 % Unauthorized copying of this file, via any medium is strictly prohibited.
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
-function tnSeq = generate_tnSeq(M, TJ)
-    tnSeq = TJ*rand(M,1);
+function tnSeq = generate_tnSeq(M,TJ,TR)
+    base_tn = ((1:M)*TR)'; % 平均PRI间隔
+    tnSeq = base_tn + TJ*rand(M,1); % 偏移
 end

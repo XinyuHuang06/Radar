@@ -1,4 +1,4 @@
-% Example: value = smlk(m,l,k,n,p,TS,Delta_r,Delta_v,c,phi0,TW,tnSeq,fnSeq)
+% Example: value = smlk(m, n, p, num_tar, Parameter);
 % :param :
 % :return :
 % detailed description:
@@ -10,12 +10,22 @@
 % Unauthorized copying of this file, via any medium is strictly prohibited.
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
-function value = smlk(m,l,k,n,p,TS,Delta_r,Delta_v,c,phi0,TW,tnSeq,fnSeq)
-    tn = tnSeq(n+1);
-    tm = tnSeq(m+1);
-    fn = fnSeq(n+1);
-    fm = fnSeq(m+1);
+function value = smlk(m, n, p, num_tar, Parameter)
+    % Unpacket The parameter
+    Delta_r = Parameter.Delta_r;
+    Delta_v = Parameter.Delta_v;
+    c = Parameter.c;
+    phi0 = Parameter.phi0;
+    tnSeq = Parameter.tnSeq;
+    fnSeq = Parameter.fnSeq;
+    TS = Parameter.TS;
+    % Gneralize the signal
+    l = Parameter.TargetMatrix(1,num_tar);
+    k = Parameter.TargetMatrix(2,num_tar);
+    p = p(:);
+    tn = tnSeq(n);
+    fn = fnSeq(n);
     tnp = tn + p*TS;
-    value = sT( tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c,  tm, fm, phi0, TW).*exp(-1j*(2*pi*fn*tnp+phi0));
-    % value = sT( tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c,  tm, fm, phi0, TW).*exp(-1j*(2*pi*fn*tn+phi0));
+    value = sT(tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c, m, Parameter).*exp(-1j*(2*pi*fn*tnp+phi0));
+%     value = sT( tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c,  tm, fm, phi0, TW).*exp(-1j*(2*pi*fn*tnp+phi0));
 end

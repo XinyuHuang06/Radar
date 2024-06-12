@@ -1,5 +1,5 @@
-% Example: fnSeq = generate_fnSeq(fC, B, G, N, M)
-% :param :
+% Example: fnSeq = generate_fnSeq(Parameter);
+% :param : Parameter结构体由Initialization_Parameter函数生成。
 % :return :
 % detailed description: 依照准则生成载频序列
 %------------------------------------------------------------------------------
@@ -10,7 +10,7 @@
 % Unauthorized copying of this file, via any medium is strictly prohibited.
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
-function fnSeq = generate_fnSeq(fC, B, G, N, M)
+function fnSeq = generate_fnSeq(fC, G, B, N, M)
     fnSeq = zeros(M,1);
     for n=0:M-1
         while(1)

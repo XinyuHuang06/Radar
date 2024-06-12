@@ -5,7 +5,7 @@ function [signal_NLFM, t_grid] = generator_NLFM(varargin)
 % :param 
 % :return signal_NLFM:
 % :return t:
-% ÒÀ¾ÝÏàÎ»¶ºÁôÔ­ÀíÉè¼ÆNLFMÐÅºÅ
+% ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½Ô­ï¿½ï¿½ï¿½ï¿½ï¿½NLFMï¿½Åºï¿½
 %------------------------------------------------------------------------------
 % Created by: Xinyu Huang.
 % On: 20/10/2023.
@@ -15,11 +15,11 @@ function [signal_NLFM, t_grid] = generator_NLFM(varargin)
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
     in_par = inputParser;
-    addOptional(in_par, 'fs', 0); % ²ÉÑùÆµÂÊ
-    addOptional(in_par, 'fc', 0); % ÔØ²¨ÆµÂÊ
-    addOptional(in_par, 'B', 0); % ´ø¿í
-    addOptional(in_par, 'N', 0); % ÐÅºÅµãÊý
-    addOptional(in_par, 'fun', 0); % ÆµÓòÐÅºÅº¯Êý
+    addOptional(in_par, 'fs', 0); % ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½
+    addOptional(in_par, 'fc', 0); % ï¿½Ø²ï¿½Æµï¿½ï¿½
+    addOptional(in_par, 'B', 0); % ï¿½ï¿½ï¿½ï¿½
+    addOptional(in_par, 'N', 0); % ï¿½ÅºÅµï¿½ï¿½ï¿½
+    addOptional(in_par, 'fun', 0); % Æµï¿½ï¿½ï¿½ÅºÅºï¿½ï¿½ï¿½
     parse(in_par, varargin{:});
     fs = in_par.Results.fs;
     fc = in_par.Results.fc;
@@ -29,9 +29,9 @@ function [signal_NLFM, t_grid] = generator_NLFM(varargin)
 
     T0 = N/fs;
     t_grid = (0:1/fs:(N-1)/fs)';
-    fun = fun(:)/max(fun); % ×ª»¯ÎªÁÐÏòÁ¿²¢¹éÒ»»¯
+    fun = fun(:)/max(fun); % ×ªï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
     fun = fun*B;
-    m_fun = tril(ones(N))*fun; % »ý·Ö
+    m_fun = tril(ones(N))*fun; % ï¿½ï¿½ï¿½ï¿½
     m_fun = fun;
     carrier = exp(1j*2*pi*fc*t_grid);
     signal_NLFM = carrier.*exp(1j*2*pi*m_fun.*t_grid);

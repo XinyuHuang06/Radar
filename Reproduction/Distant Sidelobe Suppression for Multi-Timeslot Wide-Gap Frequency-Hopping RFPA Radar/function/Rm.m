@@ -11,6 +11,8 @@
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
 function Rm = Rm(MW, N1, N2, m, fnSeq, fpass)
+
+    
     Rm = zeros(MW);
     Nm = [m-N2:m-1,m+1:m+N1];
     fm = fnSeq(m);
