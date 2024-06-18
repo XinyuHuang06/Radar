@@ -45,11 +45,11 @@ function xr_out = Update_xr(DataSet, Data)
         % BT1 = BT1_2 + BT1_3 + BT1_4 + BT1_5;
         % % Target Value Test
         % C1
-        C1_1 = -lambda_0'*br;
-        C1_2 = rho_0/2*(br'*br);
-        C1_3 = sum(cellfun(@(lambda,chi) lambda*(-cr'*chi*(br-cr)-vartheta-h),num2cell(lambda_1),chi_matrix));
-        C1_4 = sum(cellfun(@(rho,chi) rho/2*((vartheta+h)^2+cr'*chi*(br-cr)*(br-cr)'*chi'*cr),num2cell(rho_1),chi_matrix));
-        C1 = C1_1 + C1_2 + C1_3 + C1_4;
+%         C1_1 = -lambda_0'*br;
+%         C1_2 = rho_0/2*(br'*br);
+%         C1_3 = sum(cellfun(@(lambda,chi) lambda*(-cr'*chi*(br-cr)-vartheta-h),num2cell(lambda_1),chi_matrix));
+%         C1_4 = sum(cellfun(@(rho,chi) rho/2*((vartheta+h)^2+cr'*chi*(br-cr)*(br-cr)'*chi'*cr),num2cell(rho_1),chi_matrix));
+%         C1 = C1_1 + C1_2 + C1_3 + C1_4;
     else
         A1_temp1 = pagemtimes(pagemtimes(FNr,"transpose",Taf_1,"transpose"),FNr*br);
         A1_temp1 = pagemtimes(A1_temp1,"none",A1_temp1,"transpose");
@@ -85,9 +85,9 @@ function xr_out = Update_xr(DataSet, Data)
     [xr_out,~,~,~] = fmincon(@(x) quadobj(x,A1*2,BT1',0), xr,[],[],[],[],[],[],...
         @(x) quadconstr(x,temp_H,temp_k,temp_d),options);
     % Caculate the new xr
-    % xr_out = (A1 + 2*temp_lambda)/B;
-    % xr'*A1*xr + BT1*xr
-    % xr_out'*A1*xr_out + BT1*xr_out
+%     xr_out = (A1 + 2*1)/BT1;
+% %     xr'*A1*xr + BT1*xr
+% %     xr_out'*A1*xr_out + BT1*xr_out
 end
 
 

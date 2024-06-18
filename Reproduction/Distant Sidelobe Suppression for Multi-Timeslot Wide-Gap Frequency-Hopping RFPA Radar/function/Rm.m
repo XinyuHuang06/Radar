@@ -1,4 +1,4 @@
-% Example: Rm = Rm(MW, N1, N2, m, fnSeq, fpass)
+% Example: Rm = Rm(N1, N2, m, Parameter);
 % :param :
 % :return :
 % detailed description: 生成旁瓣能量计算矩阵
@@ -10,9 +10,11 @@
 % Unauthorized copying of this file, via any medium is strictly prohibited.
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
-function Rm = Rm(MW, N1, N2, m, fnSeq, fpass)
-
-    
+function Rm = Rm(N1, N2, m, Parameter)
+    MW = Parameter.PhaseCodeParameter.MW;
+    TC = Parameter.PhaseCodeParameter.TC;
+    fpass = Parameter.fpass;
+    fnSeq = Parameter.fnSeq;
     Rm = zeros(MW);
     Nm = [m-N2:m-1,m+1:m+N1];
     fm = fnSeq(m);

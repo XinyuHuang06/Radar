@@ -26,6 +26,11 @@ function value = smlk(m, n, p, num_tar, Parameter)
     tn = tnSeq(n);
     fn = fnSeq(n);
     tnp = tn + p*TS;
-    value = sT(tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c, m, Parameter).*exp(-1j*(2*pi*fn*tnp+phi0));
+    if Parameter.flag_PC
+        value = sT(tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c, m, Parameter).*exp(-1j*(2*pi*fn*tnp+phi0+2));
+    else
+        value = sT(tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c, m, Parameter).*exp(-1j*(2*pi*fn*tnp+phi0));
+    end
+    % value = sT(tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c, m, Parameter);
 %     value = sT( tnp - 2*(l*Delta_r-k*Delta_v*tnp)/c,  tm, fm, phi0, TW).*exp(-1j*(2*pi*fn*tnp+phi0));
 end

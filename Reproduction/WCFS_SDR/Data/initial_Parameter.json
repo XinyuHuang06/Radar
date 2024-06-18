@@ -1,19 +1,18 @@
 {
     "Max_ItersNum": 30,
     "Threshold": 20,
-
     "Flag":{
         "Plot": true,
-        "ExportFigure": true,
+        "ExportFigure": false,
         "PrintLog"  : true,
         "Sparse"    : true
     },
     "signal": {
-        "Type": "LFM",
+        "Type": "PSK",
         "M": 4,
-        "T": 0.5e-6,
-        "fc": 10e6,
+        "T": 1e-6,
+        "fc": 0,
         "fs": 60e6,
-        "B": 20e6
+        "PCV":, 128e6
     }
 }

@@ -27,20 +27,21 @@ forwaitbar = forWaitbar(Max_ItersNum);
 ParameterPackets = GenerateParameter(N, InitialParameter.signal.M, InitialParameter.Flag.Sparse, InitialParameter.Threshold);
 
 % % Generate xr, br, cr.
-x = exp(1j*2*pi*rand(N,1));
-xr = [real(x);imag(x)]; 
-b = exp(1j*2*pi*rand(N,1));
-br = [real(b);imag(b)]; 
+% x = exp(1j*2*pi*rand(N,1));
+% xr = [real(x);imag(x)]; 
+% b = exp(1j*2*pi*rand(N,1));
+% br = [real(b);imag(b)]; 
 c = generator_LFM(InitialParameter.signal.fs,InitialParameter.signal.fc,InitialParameter.signal.B,InitialParameter.signal.T);
 cr = [real(c);imag(c)];
-
+xr = cr;
+br = cr;
 % % Intialize the parameter of ADMM.
 % The coef of Lagrange terms.
 lambda_0 = 0*ones(2*N,1); 
 lambda_1 = 0*ones(N,1); 
 % The coef of penalty terms.
-rho_0 = 1e-3;
-rho_1 = 1e-3*ones(N,1);
+rho_0 = 1e-2;
+rho_1 = 1e-2*ones(N,1);
 % r: The barrier function parameter h: The 
 r = 0.01;
 h = -0.01;
@@ -52,6 +53,7 @@ DataRecordPack = DataRecord(Max_ItersNum);
 DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
 DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets.packets, ParameterPackets), 1);
 % % 
+figure(1)
 % % ADMM Iterations
 for i_m = 1:Max_ItersNum
     % % ADMM update
@@ -61,10 +63,9 @@ for i_m = 1:Max_ItersNum
     DataSetPackets.update(br,'br');
     h = Update_h(DataSetPackets.packets, ParameterPackets);% % Step 3 , Solving the h
     DataSetPackets.update(h,'h');
-    % [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);% % Step 4 , Solving the rho_0 and rho_1
+    [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);% % Step 4 , Solving the rho_0 and rho_1
     [lambda_0, lambda_1] = Update_lambda(DataSetPackets.packets, ParameterPackets);% % Step 5 , Solving the lambda_0 and lambda_1
-    DataSetPackets.update(lambda_0,'lambda_0');
-    DataSetPackets.update(lambda_1,'lambda_1');
+    DataSetPackets.update(lambda_0,'lambda_0');DataSetPackets.update(lambda_1,'lambda_1');
     % % Other
     DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets.packets, ParameterPackets), i_m + 1);
     forwaitbar.show_bar; % progress bar

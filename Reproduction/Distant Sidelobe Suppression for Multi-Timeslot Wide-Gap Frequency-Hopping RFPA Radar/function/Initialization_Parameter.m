@@ -24,14 +24,14 @@ function varargout = Initialization_Parameter()
     % 载频捷变分布 高斯分布
     N = 3; % 相邻脉冲数
     G = 10*1e6; % 最小频率间隔 10 MHz
-    fS = 128*1e6; % 采样频率 128 MHz
+    fS = 2*128*1e6; % 采样频率 128 MHz
     phi0 = 0; % 初始相位
     TS = 1/(fS); % 采样间隔 且有 TS <= 1/(2*B)
     % 探测相关参数
-    Delta_r = 10; % 距离探测精度
-    Delta_v = 10; % 速度探测精度
-    max_l = 100; % 最大距离探测单元
-    max_k = 100; % 最大速度探测单元
+    Delta_r = 10; % 距离探测精度 10m
+    Delta_v = 10; % 速度探测精度 10m/s
+    max_l = 60; % 最大距离探测单元 600 - 最大探测距离 60 km
+    max_k = 100; % 最大速度探测单元 100 - 最大探测速度 1 km/s
     % 其它参数
     c = 3*1e8; % 光速
     % 目标信息
@@ -49,10 +49,10 @@ function varargout = Initialization_Parameter()
     tnSeq = generate_tnSeq(M,TJ,TR);
     % 相位编码相关参数
     flag_PC = 0; % 是否使用相位编码 bool type
-    CR = 128*1e6; % 码元传输速率 128 MHz
+    CR = 32*1e6; % 码元传输速率 128 MHz
     TC = 1/CR; % 单码元传输间隔
     MW = round(TW/TC); % 单脉冲码元传输个数
-    PhaseCode = exp(1j*2*pi*rand(MW,1)); % 初始相位编码序列
+    PhaseCode = exp(1j*2*pi*rand(MW, M)); % 初始相位编码序列，总计M个信号，每个信号编码长度为MW
     % 初始化结构体
     Parameter.fC = fC;
     Parameter.M = M;
@@ -65,6 +65,7 @@ function varargout = Initialization_Parameter()
     Parameter.N = N;
     Parameter.G = G;
     Parameter.phi0 = phi0;
+    Parameter.fS = fS;
     Parameter.TS = TS;
     Parameter.Delta_r = Delta_r;
     Parameter.Delta_v = Delta_v;
