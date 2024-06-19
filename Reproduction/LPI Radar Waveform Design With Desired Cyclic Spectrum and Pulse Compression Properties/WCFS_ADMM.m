@@ -23,9 +23,11 @@ function WCFS_ADMM(DataPath, OutPath)
         DataSetPackets.update(br,'br');
         h = Update_h(DataSetPackets.packets, ParameterPackets);% % Step 3 , Solving the h
         DataSetPackets.update(h,'h');
-        % [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);% % Step 4 , Solving the rho_0 and rho_1
-        [lambda_0, lambda_1] = Update_lambda(DataSetPackets.packets, ParameterPackets);% % Step 5 , Solving the lambda_0 and lambda_1
+        [lambda_0, lambda_1] = Update_lambda(DataSetPackets.packets, ParameterPackets);% % Step 4 , Solving the lambda_0 and lambda_1
         DataSetPackets.update(lambda_0,'lambda_0',lambda_1,'lambda_1');
+
+        [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);% % Step 4 , Solving the rho_0 and rho_1
+        DataSetPackets.update(rho_0, 'rho_0', rho_1, 'rho_1');
         % % Other
         DataRecordPack.UpdateTarRecord(CaculateTargetFun(DataSetPackets.packets, ParameterPackets), i_m + 1);
         DataRecordPack.UpdateParaRecord(xr, 'xr', rho_0, 'rho_0', rho_1, 'rho_1', lambda_0, 'lambda_0', lambda_1, 'lambda_1');
