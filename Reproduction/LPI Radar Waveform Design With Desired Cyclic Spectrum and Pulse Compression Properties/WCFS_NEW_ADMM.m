@@ -12,6 +12,7 @@
 %------------------------------------------------------------------------------
 % Jsonlab
 clc;clear; close all;
+tic
 % % Intialization
 OutFolderPath = 'Output';
 % Load data.
@@ -74,3 +75,4 @@ clear *_k
 % % 
 PlotAndExport(DataSetPackets.packets, DataRecordPack, InitialParameter, OutFolderPath);
 rmpath('function/');
+toc
