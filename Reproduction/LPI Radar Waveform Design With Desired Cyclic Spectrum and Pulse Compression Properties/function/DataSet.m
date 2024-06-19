@@ -2,7 +2,6 @@ classdef DataSet < handle
     properties (Access = public)
         packets;
     end
-
     methods
         function obj = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N)
             obj.packets.xr = xr;
@@ -19,7 +18,23 @@ classdef DataSet < handle
         end
     end
     methods (Access = public)
-        function update(obj, value, str)
+        function update(obj, value, str, varargin)
+            if nargin > 3
+                update_packet(obj, value, str);
+                M = (nargin-3)/2;
+                for i = 1:M
+                    value = varargin{1*i};
+                    str = varargin{2*i};
+                    update_packet(obj, value, str);
+                end
+            else
+                update_packet(obj, value, str);
+            end
+        end
+    end
+
+    methods (Access = private)
+        function update_packet(obj, value, str)
             if any( contains(fieldnames(obj.packets),str) )
                 obj.packets.(str) = value;
             else

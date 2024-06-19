@@ -8,7 +8,7 @@ function PlotAndExport(DataSetPackets, DataRecordPack, InitialParameter, OutFold
     fs = InitialParameter.signal.fs;
     M = InitialParameter.signal.M;
     % Unpacket DataRecordPack
-    TarS = DataRecordPack.DataBag;
+    TarS = DataRecordPack.TarRecord;
     if InitialParameter.Flag.Plot
         if exist(OutFolderPath,"dir") == 0
             mkdir(OutFolderPath);

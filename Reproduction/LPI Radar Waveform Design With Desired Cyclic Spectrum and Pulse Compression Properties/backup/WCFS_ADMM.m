@@ -49,7 +49,7 @@ vartheta = 0.2;
 DataRecordPack = DataRecord(Max_ItersNum);
 % The initial parameter Caculation
 DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
-DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets, ParameterPackets), 1);
+DataRecordPack.UpdateTarRecord(CaculateTargetFun(DataSetPackets, ParameterPackets), 1);
 % % 
 % % ADMM Iterations
 for i_m = 1:Max_ItersNum
@@ -67,7 +67,7 @@ for i_m = 1:Max_ItersNum
     % % Other
     % Data Record
     DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
-    DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets, ParameterPackets), i_m + 1);
+    DataRecordPack.UpdateTarRecord(CaculateTargetFun(DataSetPackets, ParameterPackets), i_m + 1);
     % progress bar
     forwaitbar.show_bar;
 end

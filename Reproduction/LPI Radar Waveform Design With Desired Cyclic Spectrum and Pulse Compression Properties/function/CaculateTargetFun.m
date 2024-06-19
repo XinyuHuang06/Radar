@@ -11,7 +11,7 @@
 % Proprietary and confidential.
 %------------------------------------------------------------------------------
 
-function [DataBag] = CaculateTargetFun(DataSet, Data)
+function [TarRecord] = CaculateTargetFun(DataSet, Data)
     % Unpacket Data
     FNr = Data.FNr;
     flag_Sparse = Data.FlagSparse;
@@ -46,12 +46,12 @@ function [DataBag] = CaculateTargetFun(DataSet, Data)
         TargetPenalty_2 = 0.5*sum(Tar_45_temp.^2);
     end
     SUM = TargetFun + TargetLagrange_1 + TargetLagrange_2 + TargetPenalty_1 + TargetPenalty_2;
-    DataBag.SUM = SUM;
-    DataBag.TargetFun = TargetFun;
-    DataBag.TargetLagrange_1=TargetLagrange_1;
-    DataBag.TargetLagrange_2=TargetLagrange_2;
-    DataBag.TargetPenalty_1=TargetPenalty_1;
-    DataBag.TargetPenalty_2=TargetPenalty_2;
+    TarRecord.SUM = SUM;
+    TarRecord.TargetFun = TargetFun;
+    TarRecord.TargetLagrange_1=TargetLagrange_1;
+    TarRecord.TargetLagrange_2=TargetLagrange_2;
+    TarRecord.TargetPenalty_1=TargetPenalty_1;
+    TarRecord.TargetPenalty_2=TargetPenalty_2;
 end
 
 function TarFunCValue = Caculate_TarFunCValue(FNr, xr, Taf_1, Taf_2, flag_Sparse, omega_alpha_1)
