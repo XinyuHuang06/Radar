@@ -8,7 +8,6 @@ function br_out = Update_br(DataSet, Data)
     omega_alpha_1 = Data.OmegaAlpha;
     % Unpacket DataSet
     xr = DataSet.xr;
-    br = DataSet.br;
     cr = DataSet.cr;
     lambda_0 = DataSet.lambda_0;
     lambda_1 = DataSet.lambda_1;
@@ -19,13 +18,14 @@ function br_out = Update_br(DataSet, Data)
     N = DataSet.N;
 
     if flag_Sparse
-        XA2_1_1 = cellfun( @(Taf) FNr'*(Taf)'*(FNr*xr), Taf_1, "UniformOutput",false);
-        XA2_1_2 = cellfun( @(Taf) FNr'*(Taf)'*(FNr*xr), Taf_2, "UniformOutput",false);
         % % Get the free memory size
         [r,w] = unix('free | grep Mem');
         stats = str2double(regexp(w, '[0-9]*', 'match'));
         memsize = stats(1)/(1024)^2;
         RequestMemory = 8*2*N*2*N*(N+1)*N/2/(1024^3);
+        XA2_1_1 = cellfun( @(Taf) FNr'*(Taf)'*(FNr*xr), Taf_1, "UniformOutput",false);
+        XA2_1_2 = cellfun( @(Taf) FNr'*(Taf)'*(FNr*xr), Taf_2, "UniformOutput",false);
+        % % Choosing the compute method by the meomery.
         if memsize > RequestMemory
             A2_1_temp = (cellfun( @(x1,x2,omega_alpha) omega_alpha*(x1*x1'+x2*x2'), XA2_1_1, XA2_1_2, num2cell(omega_alpha_1), "UniformOutput",false))';
             A2_1_temp = reshape([A2_1_temp{:}],2*N, 2*N, (N+1)*N/2);
@@ -71,21 +71,21 @@ function br_out = Update_br(DataSet, Data)
         BT2_4_temp1 = pagemtimes(chi_matrix,"none",xr-cr,"none");
         BT2_4_temp1 = pagemtimes(cr,"transpose",pagemtimes(BT2_4_temp1,"none",BT2_4_temp1,"transpose"),"none");
         BT2_4 = sum(bsxfun(@times, BT2_4_temp1, reshape(-rho_1, 1, 1, [])), 3);
-        BT2_5_temp1 = pagemtimes(xr-cr,"transpose",chi_matrix,"none");
+        BT2_5_temp1 = pagemtimes(xr-cr,"transpose",chi_matrix,"transpose");
         BT2_5 = -(vartheta+h)*sum(bsxfun(@times, BT2_5_temp1, reshape(rho_1, 1, 1, [])), 3);
         BT2 = BT2_1 + BT2_2 + BT2_3 + BT2_4 + BT2_5;
-        % BT2 = BT2_2 + BT2_3 + BT2_4 + BT2_5;
     end
-    % br_out = -(2*A2)\BT2';
+    br_out = -(2*A2)\BT2';
 
-    temp_H = cell(1);temp_k= cell(1);temp_d= cell(1);
-    temp_H{1} = eye(2*N)*2;temp_k{1} = zeros(2*N,1);temp_d{1} = -N;
-    options = optimoptions(@fmincon,'Algorithm','interior-point',...
-        'SpecifyObjectiveGradient',true,'SpecifyConstraintGradient',true,...
-        'HessianFcn',@(x,lambda)quadhess(lambda,A2*2,temp_H),'Display','off');
-    [br_out,~,~,~] = fmincon(@(x) quadobj(x,A2*2,BT2',0), br,[],[],[],[],[],[],...
-        @(x) quadconstr(x,temp_H,temp_k,temp_d),options);
+    % temp_H = cell(1);temp_k= cell(1);temp_d= cell(1);
+    % temp_H{1} = eye(2*N)*2;temp_k{1} = zeros(2*N,1);temp_d{1} = -N;
+    % options = optimoptions(@fmincon,'Algorithm','interior-point',...
+    %     'SpecifyObjectiveGradient',true,'SpecifyConstraintGradient',true,...
+    %     'HessianFcn',@(x,lambda)quadhess(lambda,A2*2,temp_H),'Display','off');
+    % [br_out,~,~,~] = fmincon(@(x) quadobj(x,A2*2,BT2',0), br,[],[],[],[],[],[],...
+    %     @(x) quadconstr(x,temp_H,temp_k,temp_d),options);
 end
+
 
 function [y,grady] = quadobj(x,Q,f,c)
     y = 1/2*x'*Q*x + f'*x + c;

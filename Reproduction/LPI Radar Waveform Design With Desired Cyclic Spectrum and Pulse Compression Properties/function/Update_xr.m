@@ -22,9 +22,23 @@ function xr_out = Update_xr(DataSet, Data)
         % % A1
         XA1_1_1 = cellfun( @(x) FNr'*(x)'*(FNr*br), Taf_1, "UniformOutput",false);
         XA1_1_2 = cellfun( @(x) FNr'*(x)'*(FNr*br), Taf_2, "UniformOutput",false);
-        A1_1_temp = (cellfun( @(x1,x2,omega_alpha) omega_alpha*(x1*x1'+x2*x2'), XA1_1_1, XA1_1_2, num2cell(omega_alpha_1), "UniformOutput",false))';
-        A1_1_temp = reshape([A1_1_temp{:}],2*N, 2*N, (N+1)*N/2);
-        A1_1 = sum(A1_1_temp, 3);
+        % % Get the free memory size
+        [r,w] = unix('free | grep Mem');
+        stats = str2double(regexp(w, '[0-9]*', 'match'));
+        memsize = stats(1)/(1024)^2;
+        RequestMemory = 8*2*N*2*N*(N+1)*N/2/(1024^3);
+        % % Choosing the compute method by the meomery.
+        if memsize > RequestMemory
+            A1_1_temp = (cellfun( @(x1,x2,omega_alpha) omega_alpha*(x1*x1'+x2*x2'), XA1_1_1, XA1_1_2, num2cell(omega_alpha_1), "UniformOutput",false))';
+            A1_1_temp = reshape([A1_1_temp{:}],2*N, 2*N, (N+1)*N/2);
+            A1_1 = sum(A1_1_temp, 3);
+        else
+            A1_1 = zeros(2*N, 2*N);
+            for k = 1:(N+1)*N/2
+                A1_1 = A1_1 + omega_alpha_1(k)*(XA1_1_1{k}*XA1_1_1{k}' + XA1_1_2{k}*XA1_1_2{k}');
+            end
+        end
+        
         XA1_2 = cellfun( @(chi,rho) rho/2*chi*(br-cr)*(br-cr)'*chi', chi_matrix, num2cell(rho_1), "UniformOutput",false);
         XA1_2 = XA1_2';
         A1_2_temp = reshape( [XA1_2{:}], 2*N, 2*N, N);

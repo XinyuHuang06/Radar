@@ -2,10 +2,8 @@ addpath("function/");
 % Load data.
 InitialParameter = loadjson('./Data/initial_Parameter.json');
 N = round(InitialParameter.signal.T*InitialParameter.signal.fs);
-
 Max_ItersNum = InitialParameter.Max_ItersNum;
 Threshold = InitialParameter.Threshold;
-
 % Generate the parameter packets
 ParameterPackets = GenerateParameter(N, InitialParameter.signal.M, InitialParameter.Flag.Sparse, InitialParameter.Threshold);
 % % Generate xr, br, cr.
@@ -34,6 +32,6 @@ DataRecordPack = DataRecord(Max_ItersNum);
 % The initial parameter Caculation
 DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
 DataRecordPack.UpdateDataSet(CaculateTargetFun(DataSetPackets.packets, ParameterPackets), 1);
+% % Save the mat file
+save("data/parameter_03.mat", 'ParameterPackets', 'DataRecordPack', 'DataSetPackets', 'InitialParameter');
 rmpath('function/');
-
-save("Data/parameter_03.mat", 'ParameterPackets', 'DataRecordPack', 'DataSetPackets', 'InitialParameter');
