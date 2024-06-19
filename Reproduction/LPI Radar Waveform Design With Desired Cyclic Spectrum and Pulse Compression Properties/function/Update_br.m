@@ -21,9 +21,21 @@ function br_out = Update_br(DataSet, Data)
     if flag_Sparse
         XA2_1_1 = cellfun( @(Taf) FNr'*(Taf)'*(FNr*xr), Taf_1, "UniformOutput",false);
         XA2_1_2 = cellfun( @(Taf) FNr'*(Taf)'*(FNr*xr), Taf_2, "UniformOutput",false);
-        A2_1_temp = (cellfun( @(x1,x2,omega_alpha) omega_alpha*(x1*x1'+x2*x2'), XA2_1_1, XA2_1_2, num2cell(omega_alpha_1), "UniformOutput",false))';
-        A2_1_temp = reshape([A2_1_temp{:}],2*N, 2*N, (N+1)*N/2);
-        A2_1 = sum(A2_1_temp, 3);
+        % % Get the free memory size
+        [r,w] = unix('free | grep Mem');
+        stats = str2double(regexp(w, '[0-9]*', 'match'));
+        memsize = stats(1)/(1024)^2;
+        RequestMemory = 8*2*N*2*N*(N+1)*N/2/(1024^3);
+        if memsize > RequestMemory
+            A2_1_temp = (cellfun( @(x1,x2,omega_alpha) omega_alpha*(x1*x1'+x2*x2'), XA2_1_1, XA2_1_2, num2cell(omega_alpha_1), "UniformOutput",false))';
+            A2_1_temp = reshape([A2_1_temp{:}],2*N, 2*N, (N+1)*N/2);
+            A2_1 = sum(A2_1_temp, 3);
+        else
+            A2_1 = zeros(2*N, 2*N);
+            for k = 1:(N+1)*N/2
+                A2_1 = A2_1 + omega_alpha_1(k)*(XA2_1_1{k}*XA2_1_1{k}' + XA2_1_2{k}*XA2_1_2{k}');
+            end
+        end
         XA2_2 = cellfun( @(chi,rho) rho/2*chi*(xr-cr)*(xr-cr)'*chi', chi_matrix, num2cell(rho_1), "UniformOutput",false); % 2024/04/23 修正1/2系数
         A2_2_temp = reshape( [XA2_2{:}], 2*N, 2*N, N);
         A2_2 = sum(A2_2_temp, 3);
@@ -35,7 +47,7 @@ function br_out = Update_br(DataSet, Data)
         BT2_3 = (sum(reshape([XBT2_3{:}]',2*N,N), 2)');
         XBT2_4 = cellfun(@(rho,chi) -rho*cr'*((chi*(xr-cr))*(xr-cr)'*chi'), num2cell(rho_1), chi_matrix, "UniformOutput", false);
         BT2_4 = (sum(reshape([XBT2_4{:}]',2*N,N), 2)');
-        XBT2_5 = cellfun(@(rho,chi) -(vartheta+h)*rho*(xr-cr)'*chi, num2cell(rho_1), chi_matrix,"UniformOutput",false);
+        XBT2_5 = cellfun(@(rho,chi) -(vartheta+h)*rho*(xr-cr)'*chi', num2cell(rho_1), chi_matrix,"UniformOutput",false);
         BT2_5 = (sum(reshape([XBT2_5{:}]',2*N,N), 2)');
         BT2 = BT2_1 + BT2_2 + BT2_3 + BT2_4 + BT2_5;
         % BT2 = BT2_2 + BT2_3 + BT2_4 + BT2_5;
