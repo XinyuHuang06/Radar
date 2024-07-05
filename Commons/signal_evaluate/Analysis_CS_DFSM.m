@@ -16,7 +16,7 @@ function varargout = Analysis_CS_DFSM(varargin)
     addOptional(in_par, 'signal', 0);
     addOptional(in_par, 'df', 0);
     addOptional(in_par, 'M', 32);
-    addParameter(in_par, 'bool_draw', 1);
+    addParameter(in_par, 'bool_draw', 0);
     parse(in_par, varargin{:});
     fs = in_par.Results.fs;
     signal = in_par.Results.signal;
@@ -27,8 +27,8 @@ function varargout = Analysis_CS_DFSM(varargin)
     x = real(signal); % Using real part of signal
     x = x(:);
     N = length(signal);
-    N = (M*fs)/df;
-    N = pow2 (nextpow2(N)); % windowing record for FFT
+    % N = (M*fs)/df;
+    % N = pow2 (nextpow2(N)); % windowing record for FFT
 
     X = fft(x,N);               % fft of the truncated (or zero padded) time series
     X = fftshift(X);            % shift components of fft

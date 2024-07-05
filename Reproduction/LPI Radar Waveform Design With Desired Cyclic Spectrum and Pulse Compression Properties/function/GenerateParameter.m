@@ -40,7 +40,7 @@ function ParameterPackets = GenerateParameter(N, M, Flag_Sparse, threshhold)
                 Taf_1{i_temp} = sparse(temp_taf_1);
                 Taf_2{i_temp} = sparse(temp_taf_2);
                 Taf{i_temp} = sparse(temp_taf);
-                if abs(temp_1-temp_2) < threshhold
+                if abs(N + 1 - temp_1-temp_2) < threshhold
                     omega_alpha_1(i_temp) = 0.01;
                 else
                     omega_alpha_1(i_temp) = 10;

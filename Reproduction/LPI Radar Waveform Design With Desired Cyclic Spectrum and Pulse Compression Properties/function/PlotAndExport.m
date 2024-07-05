@@ -1,15 +1,17 @@
-function PlotAndExport(DataSetPackets, DataRecordPack, InitialParameter, OutFolderPath)
+function PlotAndExport(DataSetPackets, DataRecordPack, OutFolderPath)
     % Unpacket DataSet
     xr = DataSetPackets.xr;
     br = DataSetPackets.br;
     cr = DataSetPackets.cr;
     N = DataSetPackets.N;
     % Unpacket InitialParameter
-    fs = InitialParameter.signal.fs;
-    M = InitialParameter.signal.M;
+    fs = DataRecordPack.ConstantPara.signal.fs;
+    M = DataRecordPack.ConstantPara.signal.M;
+    FlagPlot = DataRecordPack.ConstantPara.Flag.Plot;
+    FlagExportFigure = DataRecordPack.ConstantPara.Flag.ExportFigure;
     % Unpacket DataRecordPack
     TarS = DataRecordPack.TarRecord;
-    if InitialParameter.Flag.Plot
+    if FlagPlot
         if exist(OutFolderPath,"dir") == 0
             mkdir(OutFolderPath);
         end
@@ -38,7 +40,7 @@ function PlotAndExport(DataSetPackets, DataRecordPack, InitialParameter, OutFold
         title('\alpha = 0'); legend('cr','xr');
         SetDrawStyle;
 
-        if InitialParameter.Flag.ExportFigure
+        if FlagExportFigure
         % SetDrawStyle;
             exportgraphics(fig2, strcat('./',OutFolderPath,'/Fig2_Sidelobe.png'),'ContentType', 'image');
             exportgraphics(fig3, strcat('./',OutFolderPath,'/Fig3_TimeDomain.png'),'ContentType', 'image');

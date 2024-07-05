@@ -1,6 +1,6 @@
 clc; clear; close all;
 % 导入函数定义
-addpath(".\function");
+addpath("./function");
 % 参数初始化
 flag = 1;
 if flag
@@ -35,7 +35,7 @@ Analysis_ES(lf_value2, Parameter.fS, round(Parameter.TW*Parameter.fS),'normalize
 N1 = min(Parameter.N, Parameter.M-1-n);
 N2 = min(Parameter.N, n);
 Rm = Rm(N1, N2, m, Parameter);
-Update_pc(m, Rm, Parameter);
+Update_pc(m, Rm, 1e-6, Parameter);
 value = smlk(m, n, p, num_tar, Parameter);
 figure
 Analysis_ES(value, Parameter.fS, round(Parameter.TW*Parameter.fS),'normalized', 0);

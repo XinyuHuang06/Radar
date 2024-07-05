@@ -11,7 +11,6 @@ function h = Update_h(DataSet, Data)
     r = DataSet.r;
     vartheta = DataSet.vartheta;
     N = DataSet.N;
-
     A3 = sum(rho_1)/2;
     BT3_1 = -sum(lambda_1);
     if flag_Sparse

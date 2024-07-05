@@ -20,41 +20,44 @@ function xr_out = Update_xr(DataSet, Data)
     % Update xr
     if flag_Sparse
         % % A1
-        XA1_1_1 = cellfun( @(x) FNr'*(x)'*(FNr*br), Taf_1, "UniformOutput",false);
-        XA1_1_2 = cellfun( @(x) FNr'*(x)'*(FNr*br), Taf_2, "UniformOutput",false);
-        % % Get the free memory size
-        [r,w] = unix('free | grep Mem');
-        stats = str2double(regexp(w, '[0-9]*', 'match'));
-        memsize = stats(1)/(1024)^2;
-        RequestMemory = 8*2*N*2*N*(N+1)*N/2/(1024^3);
-        % % Choosing the compute method by the meomery.
-        if memsize > RequestMemory
-            A1_1_temp = (cellfun( @(x1,x2,omega_alpha) omega_alpha*(x1*x1'+x2*x2'), XA1_1_1, XA1_1_2, num2cell(omega_alpha_1), "UniformOutput",false))';
-            A1_1_temp = reshape([A1_1_temp{:}],2*N, 2*N, (N+1)*N/2);
-            A1_1 = sum(A1_1_temp, 3);
-        else
-            A1_1 = zeros(2*N, 2*N);
-            for k = 1:(N+1)*N/2
-                A1_1 = A1_1 + omega_alpha_1(k)*(XA1_1_1{k}*XA1_1_1{k}' + XA1_1_2{k}*XA1_1_2{k}');
-            end
+        % A1_1 = zeros(2*N, 2*N);
+        % XA1_1_1 = cellfun( @(x) FNr'*(x)'*(FNr*br), Taf_1, "UniformOutput",false);
+        % XA1_1_2 = cellfun( @(x) FNr'*(x)'*(FNr*br), Taf_2, "UniformOutput",false);
+        % for k = 1:(N+1)*N/2
+        %     A1_1 = A1_1 + omega_alpha_1(k)*(XA1_1_1{k}*XA1_1_1{k}' + XA1_1_2{k}*XA1_1_2{k}');
+        % end
+
+        A1_1 = zeros(2*N, 2*N);
+        for k = 1:(N+1)*N/2
+            XA1_1_1 = FNr'*(Taf_1{k})'*(FNr*br);
+            XA1_1_2 = FNr'*(Taf_2{k})'*(FNr*br);
+            A1_1 = A1_1 + omega_alpha_1(k)*(XA1_1_1*XA1_1_1' + XA1_1_2*XA1_1_2');
         end
+
         
         XA1_2 = cellfun( @(chi,rho) rho/2*chi*(br-cr)*(br-cr)'*chi', chi_matrix, num2cell(rho_1), "UniformOutput",false);
-        XA1_2 = XA1_2';
-        A1_2_temp = reshape( [XA1_2{:}], 2*N, 2*N, N);
-        A1_2 = sum(A1_2_temp, 3);
+        A1_2  = zeros(2*N, 2*N);
+        for i = 1:N
+            A1_2 = A1_2 + XA1_2{i};
+        end
         A1_3 = rho_0/2*eye(2*N,2*N);
         A1 = A1_1 + A1_2 + A1_3;
         % % B1
         BT1_1 = lambda_0'; % Caculate the matrix B_1^T
         BT1_2 = -rho_0*br';
+
+
         XBT1_3 = cellfun(@(lambda,chi) lambda*(br-cr)'*chi', num2cell(lambda_1), chi_matrix, "UniformOutput", false);
-        BT1_3 = (sum(reshape([XBT1_3{:}]',2*N,N), 2)');
         XBT1_4 = cellfun( @(rho,chi) -rho*cr'*(chi*(br-cr)*(br-cr)'*chi'), num2cell(rho_1), chi_matrix, "UniformOutput", false);
-        BT1_4 = (sum(reshape([XBT1_4{:}]',2*N,N), 2)');
         XBT1_5 = cellfun(@(rho,chi) -(vartheta+h)*rho*(br-cr)'*chi', num2cell(rho_1), chi_matrix,"UniformOutput",false);
-        BT1_5 =  (sum(reshape([XBT1_5{:}]',2*N,N), 2)');
-        
+        BT1_3 = zeros(1,2*N);
+        BT1_4 = zeros(1,2*N);
+        BT1_5 = zeros(1,2*N);
+        for i = 1:N
+            BT1_3 = BT1_3 + XBT1_3{i};            
+            BT1_4 = BT1_4 + XBT1_4{i};
+            BT1_5 = BT1_5 + XBT1_5{i};
+        end
         BT1 = BT1_1 + BT1_2 + BT1_3 + BT1_4 + BT1_5;
         % BT1 = BT1_2 + BT1_3 + BT1_4 + BT1_5;
         % % Target Value Test

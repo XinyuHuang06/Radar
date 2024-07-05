@@ -14,7 +14,7 @@
 function WCFS_ADMM(DataPath, OutPath)
     % % Intialization
     load(DataPath);
-    Max_ItersNum = InitialParameter.Max_ItersNum;
+    Max_ItersNum = DataRecordPack.ConstantPara.Max_ItersNum;
     % % ADMM Iterations
     for i_m = 1:Max_ItersNum
         % % ADMM update
@@ -26,12 +26,23 @@ function WCFS_ADMM(DataPath, OutPath)
         DataSetPackets.update(h,'h');
         [lambda_0, lambda_1] = Update_lambda(DataSetPackets.packets, ParameterPackets);% % Step 4 , Solving the lambda_0 and lambda_1
         DataSetPackets.update(lambda_0,'lambda_0',lambda_1,'lambda_1');
-        [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);% % Step 4 , Solving the rho_0 and rho_1
-        DataSetPackets.update(rho_0, 'rho_0', rho_1, 'rho_1');
+        % [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);% % Step 4 , Solving the rho_0 and rho_1
+        % DataSetPackets.update(rho_0, 'rho_0', rho_1, 'rho_1');
+
         % % Other
-        DataRecordPack.UpdateTarRecord(CaculateTargetFun(DataSetPackets.packets, ParameterPackets), i_m + 1);
-        DataRecordPack.UpdateParaRecord(xr, 'xr', rho_0, 'rho_0', rho_1, 'rho_1', lambda_0, 'lambda_0', lambda_1, 'lambda_1');
+        DataRecordPack.UpdateTarRecord(i_m + 1, CaculateTargetFun(DataSetPackets.packets, ParameterPackets));
+        DataRecordPack.UpdateParaRecord(i_m+1, xr, 'xr', lambda_0, 'lambda_0', lambda_1, 'lambda_1');
+        DataRecordPack.UpdateParaRecord(i_m+1, h, 'h');
+        % DataRecordPack.UpdateParaRecord(i_m+1, rho_0, 'rho_0', rho_1, 'rho_1');
+        % % Stop 
+        if DataRecordPack.JudgeStop(i_m+1, 1e-6)
+            break;
+        end
     end
-    save(strcat(OutPath,"/","Record.mat"), "DataRecordPack");
-    PlotAndExport(DataSetPackets.packets, DataRecordPack, InitialParameter, OutPath);
+    if exist(OutPath,"dir") == 0
+        mkdir(OutPath);
+    end
+    % If the parfor are used, don't directly use the save function.
+    parsave(strcat(OutPath,"/","Record.mat"), DataRecordPack, DataSetPackets);
+    PlotAndExport(DataSetPackets.packets, DataRecordPack, OutPath);
 end
