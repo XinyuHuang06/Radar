@@ -40,10 +40,11 @@ function ParameterPackets = GenerateParameter(N, M, Flag_Sparse, threshhold)
                 Taf_1{i_temp} = sparse(temp_taf_1);
                 Taf_2{i_temp} = sparse(temp_taf_2);
                 Taf{i_temp} = sparse(temp_taf);
-                if abs(N + 1 - temp_1-temp_2) < threshhold
-                    omega_alpha_1(i_temp) = 0.01;
+                % if abs(N + 1 - temp_1-temp_2) < threshhold
+                if abs(temp_1-temp_2) < threshhold
+                    omega_alpha_1(i_temp) = 0.01/N^2;
                 else
-                    omega_alpha_1(i_temp) = 10;
+                    omega_alpha_1(i_temp) = 10/N^2;
                 end
             end
         end    
@@ -51,7 +52,7 @@ function ParameterPackets = GenerateParameter(N, M, Flag_Sparse, threshhold)
         chi_matrix = zeros(2*N,2*N,N); % 相似性约束矩阵
         for i_temp = 1:N
             matrix_temp = zeros(N,N);
-            matrix_temp(i_temp,i_temp) = N^2;
+            matrix_temp(i_temp,i_temp) = 1;
             chi_matrix(:,:,i_temp) = complex2real(matrix_temp);
         end
         Taf_1 = zeros(2*N,2*N,(N+1)*N/2);

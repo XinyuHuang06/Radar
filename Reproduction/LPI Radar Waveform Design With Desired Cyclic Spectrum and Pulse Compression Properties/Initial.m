@@ -8,7 +8,7 @@ ParameterPackets = GenerateParameter(N, InitialParameter.signal.M, InitialParame
 % % Generate xr, br, cr.
 c = generator_LFM(InitialParameter.signal.fs,InitialParameter.signal.fc,InitialParameter.signal.B,InitialParameter.signal.T);
 cr = [real(c);imag(c)];
-xr = cr;
+xr = randn(size(cr));
 br = cr;
 % % Intialize the parameter of ADMM.
 % The coef of Lagrange terms.
@@ -18,8 +18,8 @@ lambda_1 = 0*ones(N,1);
 rho_0 = 1;
 rho_1 = 1*ones(N,1);
 % r: The barrier function parameter h: The 
-r = 0.001;
-h = -0.001;
+r = 1/8;
+h = -10;
 % The similarty parameter.
 
 
@@ -29,18 +29,18 @@ DataRecordPack = DataRecord(Max_ItersNum);
 % The initial parameter Caculation
 % % Save the mat file
 
-vartheta = 1;
+vartheta = 0.1;
 DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
 DataRecordPack.UpdateTarRecord(1, CaculateTargetFun(DataSetPackets.packets, ParameterPackets));
 DataRecordPack.InitialConstantParameter(JsonPath);
-save("data/parameter_01.mat", 'ParameterPackets', 'DataRecordPack', 'DataSetPackets');
-vartheta = 1;
+save("output/parameter_01.mat", 'ParameterPackets', 'DataRecordPack', 'DataSetPackets');
+vartheta = 0.2;
 DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
 DataRecordPack.UpdateTarRecord(1, CaculateTargetFun(DataSetPackets.packets, ParameterPackets));
 DataRecordPack.InitialConstantParameter(JsonPath);
-save("data/parameter_02.mat", 'ParameterPackets', 'DataRecordPack', 'DataSetPackets');
+save("output/parameter_02.mat", 'ParameterPackets', 'DataRecordPack', 'DataSetPackets');
 DataRecordPack.UpdateTarRecord(1, CaculateTargetFun(DataSetPackets.packets, ParameterPackets));
 DataRecordPack.InitialConstantParameter(JsonPath);
-vartheta = 1;
+vartheta = 0.3;
 DataSetPackets = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N);
-save("data/parameter_03.mat", 'ParameterPackets', 'DataRecordPack', 'DataSetPackets');
+save("output/parameter_03.mat", 'ParameterPackets', 'DataRecordPack', 'DataSetPackets');

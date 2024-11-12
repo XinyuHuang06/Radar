@@ -33,16 +33,16 @@ function [TarRecord] = CaculateTargetFun(DataSet, Data)
 
     TargetFun = Caculate_TarFunCValue(FNr, xr, Taf_1, Taf_2, flag_Sparse, omega_alpha_1);
     TargetLagrange_1 = lambda_0'*(xr-br);
-    TargetLagrange_2 = rho_0/2*(norm(xr-br))^2;
+    TargetPenalty_1 = rho_0/2*(norm(xr-br))^2;
     if flag_Sparse
         Tar_4_temp = cellfun(@(lambda,chi) lambda*((xr-cr)'*chi*(br-cr)-vartheta-h), num2cell(lambda_1), chi_matrix,"UniformOutput",false);
         Tar_5_temp = cellfun(@(rho,chi) 1/2*rho*(norm((xr-cr)'*chi*(br-cr)-vartheta-h)^2), num2cell(rho_1),chi_matrix,"UniformOutput",false);
-        TargetPenalty_1 = sum(cell2mat(Tar_4_temp));
+        TargetLagrange_2 = sum(cell2mat(Tar_4_temp));
         TargetPenalty_2 = sum(cell2mat(Tar_5_temp));
     else
         Tar_45_temp = pagemtimes((pagemtimes(xr-cr,"transpose",chi_matrix,"none")),"none",br-cr,"none")-vartheta-h;
         Tar_45_temp = reshape(Tar_45_temp,N,1);
-        TargetPenalty_1 = sum(Tar_45_temp);
+        TargetLagrange_2 = sum(Tar_45_temp);
         TargetPenalty_2 = 0.5*sum(Tar_45_temp.^2);
     end
     SUM = TargetFun + TargetLagrange_1 + TargetLagrange_2 + TargetPenalty_1 + TargetPenalty_2;

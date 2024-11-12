@@ -15,8 +15,8 @@ function SetDrawStyle(fig)
     end
     % Set the figure position
     screen_size = get(0,'ScreenSize'); % Getting the current screen size
-    height = 600; % Set the height, width , the left and botton positions for the figure
-    width = 800;
+    height = 1200; % Set the height, width , the left and botton positions for the figure
+    width = 1600;
     left = screen_size(3)/2 - width/2;
     bottom = screen_size(4)/2 - height/2;
     set(fig, 'Position',[left,bottom,width,height]);

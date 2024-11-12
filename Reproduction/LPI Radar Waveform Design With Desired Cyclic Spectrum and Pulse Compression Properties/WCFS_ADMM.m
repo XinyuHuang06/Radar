@@ -17,6 +17,10 @@ function WCFS_ADMM(DataPath, OutPath)
     Max_ItersNum = DataRecordPack.ConstantPara.Max_ItersNum;
     % % ADMM Iterations
     for i_m = 1:Max_ItersNum
+        if i_m == 1
+            DataRecordPack.UpdateTarRecord(1, CaculateTargetFun(DataSetPackets.packets, ParameterPackets));
+            DataRecordPack.UpdateParaRecord(1, DataSetPackets.packets.xr, 'xr', DataSetPackets.packets.lambda_0, 'lambda_0', DataSetPackets.packets.lambda_1, 'lambda_1', DataSetPackets.packets.h, 'h', DataSetPackets.packets.rho_0, 'rho_0', DataSetPackets.packets.rho_1, 'rho_1');
+        end
         % % ADMM update
         xr = Update_xr(DataSetPackets.packets, ParameterPackets);% % Step 1 , Solving the x_r. 
         DataSetPackets.update(xr,'xr');
@@ -27,11 +31,12 @@ function WCFS_ADMM(DataPath, OutPath)
         [lambda_0, lambda_1] = Update_lambda(DataSetPackets.packets, ParameterPackets);% % Step 4 , Solving the lambda_0 and lambda_1
         DataSetPackets.update(lambda_0,'lambda_0',lambda_1,'lambda_1');
         % [rho_0, rho_1] = Update_rho(DataSetPackets, ParameterPackets);% % Step 4 , Solving the rho_0 and rho_1
-        % DataSetPackets.update(rho_0, 'rho_0', rho_1, 'rho_1');
-
+        % DataSetPackets.update(rho_0, 'rho_0');
+        % DataSetPackets.update(rho_1, 'rho_1');
         % % Other
-        DataRecordPack.UpdateTarRecord(i_m + 1, CaculateTargetFun(DataSetPackets.packets, ParameterPackets));
-        DataRecordPack.UpdateParaRecord(i_m+1, xr, 'xr', lambda_0, 'lambda_0', lambda_1, 'lambda_1');
+        DataRecordPack.UpdateTarRecord(i_m+1, CaculateTargetFun(DataSetPackets.packets, ParameterPackets));
+        DataRecordPack.UpdateParaRecord(i_m+1, xr, 'xr');
+        DataRecordPack.UpdateParaRecord(i_m+1, lambda_0, 'lambda_0', lambda_1, 'lambda_1');
         DataRecordPack.UpdateParaRecord(i_m+1, h, 'h');
         % DataRecordPack.UpdateParaRecord(i_m+1, rho_0, 'rho_0', rho_1, 'rho_1');
         % % Stop 
@@ -43,6 +48,6 @@ function WCFS_ADMM(DataPath, OutPath)
         mkdir(OutPath);
     end
     % If the parfor are used, don't directly use the save function.
-    parsave(strcat(OutPath,"/","Record.mat"), DataRecordPack, DataSetPackets);
+    parsave(strcat(OutPath,"/","Record.mat"), DataRecordPack);
     PlotAndExport(DataSetPackets.packets, DataRecordPack, OutPath);
 end

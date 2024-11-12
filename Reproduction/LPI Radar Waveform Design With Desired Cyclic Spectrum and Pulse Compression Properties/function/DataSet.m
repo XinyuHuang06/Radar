@@ -5,7 +5,7 @@ classdef DataSet < handle
     end
     methods
         function obj = DataSet(xr, br, cr, lambda_0, lambda_1, rho_0, rho_1, r, h, vartheta, N)
-            obj.packets.xr = xr;
+            obj.packets.xr = zeros(size(xr));
             obj.packets.br = br;
             obj.packets.cr = cr;
             obj.packets.rho_0 = rho_0;

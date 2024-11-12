@@ -15,7 +15,7 @@ function [out_freseq,out_FreSpec_Ampli,out_FreSpec_Phase] = Analysis_FS(signal,f
     
     N = length(signal);
     N = pow2 (nextpow2(N));
-    s_fredo = fft(signal);
+    s_fredo = fft(signal, N);
     % Amplitude and Phase spectrum
     out_FreSpec_Ampli = fftshift(abs(s_fredo));
     out_FreSpec_Ampli = out_FreSpec_Ampli/max(out_FreSpec_Ampli);

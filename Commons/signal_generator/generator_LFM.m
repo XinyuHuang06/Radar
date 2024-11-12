@@ -1,5 +1,5 @@
 function [signal_LFM, t] = generator_LFM(varargin)
-% Example: [LFM, t] LFM_generator(fs,fc,B,T,'noiseF',1,'SNR',10,'type',1)
+% Example: [LFM, t] generator_LFM(fs,fc,B,T,'noiseF',1,'SNR',10,'type',1)
 % :param fs: Required, the sample frequency(Hz)
 % :param fc: Required, the carrier frequency(Hz)
 % :param B: Required, the bandwidth(Hz)
@@ -40,8 +40,6 @@ function [signal_LFM, t] = generator_LFM(varargin)
     % Generate the signal
     N = ceil(T*fs); % The no. of data sample
     k = B/T; % The slope of LFM
-    % t = (-T/2+T/N:T/N:T/2)';
-    % t = (0:1/fs:(N-1)/fs).';
     t = -T/2+1/fs:1/fs:T/2;
     signal_carrier = exp(1j*2*pi*fc*t);
     if type
@@ -65,10 +63,5 @@ function [signal_LFM, t] = generator_LFM(varargin)
     if noiseF
         signal_LFM = awgn(signal_LFM, SNR,'measured');
     end
-    % if nargout == 1
-    %     return signal_LFM
-    % elseif nargout == 2 
-    % 
-    % end
     signal_LFM = signal_LFM(:);
 end

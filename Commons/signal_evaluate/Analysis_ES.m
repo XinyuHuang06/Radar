@@ -16,7 +16,7 @@
 function varargout = Analysis_ES(signal, fs, N, varargin)
     in_par = inputParser;
     addParameter(in_par, 'bool_draw', 0);
-    addParameter(in_par, 'normalized', 0);
+    addParameter(in_par, 'normalized', 1);
     parse(in_par, varargin{:});
     flag_normalized = in_par.Results.normalized;
     bool_draw = in_par.Results.bool_draw;

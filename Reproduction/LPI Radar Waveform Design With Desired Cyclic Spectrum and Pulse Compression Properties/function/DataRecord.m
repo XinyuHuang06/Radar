@@ -48,7 +48,7 @@ classdef DataRecord < handle
                 updatekey(obj, num, value, str)
                 M = (nargin-4)/2;
                 for i = 1:M
-                    value = varargin{1*i};
+                    value = varargin{(2*(i-1)+1)};
                     str = varargin{2*i};
                     updatekey(obj, num, value, str)
                 end
